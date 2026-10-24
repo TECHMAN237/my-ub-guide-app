@@ -4,6 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 
+import { getSystemInstruction } from './src/lib/ai/assistantInstructions';
+import { searchKnowledgeBase } from './src/lib/ai/knowledgeBase';
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -72,39 +75,21 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       return;
     }
 
-    const langInstruction = language === 'fr'
-      ? 'Respond exclusively in French. Use formal, professional, polite French appropriate for university administration.'
-      : 'Respond in clear, accessible, helpful English.';
+    // Perform server-side knowledge retrieval if context is not already supplied
+    const knowledgeResult = retrievedContext
+      ? { contextText: retrievedContext, sources: [], evidenceStatus: 'Supported by official university sources' as const }
+      : searchKnowledgeBase(message, userProfile);
 
-    const profileContext = userProfile
-      ? `STUDENT PROFILE:
-- Name: ${userProfile.name}
-- Category: ${userProfile.category === 'enrolled' ? 'Enrolled Student' : 'Prospective Student'}
-- Faculty: ${userProfile.faculty || userProfile.interestedFaculty || 'Undecided'}
-- Department: ${userProfile.department || userProfile.interestedDepartment || 'Undecided'}
-- Level / Year: ${userProfile.level || userProfile.interestedStudyLevel || 'Undecided'}
-- Academic Year: ${userProfile.academicYear || '2025/2026'}
-- Semester: ${userProfile.semester || 'First Semester'}`
-      : 'STUDENT PROFILE: Guest / Unregistered Prospective Student';
+    // Get centralized assistant instructions
+    const baseInstructions = getSystemInstruction({ userProfile, language });
 
-    const systemInstruction = `You are "XENA AI", the official university information and orientation assistant powered by Google Gemma.
-Your responsibility is to guide prospective and enrolled university students through accredited programs, admission requirements, tuition fees, course credit regulations, academic calendars, and campus life.
+    const fullSystemInstruction = `${baseInstructions}
 
-CRITICAL OPERATIONAL RULES:
-1. Ground all university-specific facts (such as exact tuition amounts, credit unit caps, deadlines, exam dates) in the VERIFIED INSTITUTIONAL KNOWLEDGE below.
-2. NEVER fabricate credit limits, deadlines, fee totals, or exam schedules. If a specific institutional fact is missing from the provided knowledge, clearly state that the rule needs official confirmation from the department or registry.
-3. For credit inquiries: explain that the standard maximum is 36 credits, but students with CGPA >= 3.0 may request up to 6 additional credits (maximum 42 credits) with written HOD recommendation and Dean approval.
-4. Distinguish prospective student questions (seeking program specs, admission criteria, fees) from enrolled student questions (concerning credit limits, course registration, exam regulations).
-5. Provide structured, readable formatting with short paragraphs and clear bullet lists.
-6. ${langInstruction}
-
-${profileContext}
-
-VERIFIED INSTITUTIONAL KNOWLEDGE:
-${retrievedContext || 'No specific document retrieved. Provide general guidance and direct the student to their faculty office.'}`;
+VERIFIED INSTITUTIONAL KNOWLEDGE EVIDENCE (UNIVERSITY OF BUEA):
+${knowledgeResult.contextText || 'No specific section matched. Provide general academic guidance and advise confirming with the faculty office.'}`;
 
     // Format prompt preamble for Gemma instruction tuning
-    let fullPrompt = `System: ${systemInstruction}\n\n`;
+    let fullPrompt = `System: ${fullSystemInstruction}\n\n`;
 
     if (Array.isArray(history) && history.length > 0) {
       for (const turn of history) {
@@ -133,6 +118,8 @@ ${retrievedContext || 'No specific document retrieved. Provide general guidance 
 
     res.json({
       text: responseText,
+      sources: knowledgeResult.sources || [],
+      evidenceStatus: knowledgeResult.evidenceStatus || 'Supported by official university sources',
       modelId: GEMMA_MODEL_ID,
       provider: AI_PROVIDER,
       suggestedFollowUps: followUps
@@ -298,7 +285,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`XENA AI University Assistant Server running on http://0.0.0.0:${PORT}`);
+    console.log(`My UB Guide University Assistant Server running on http://0.0.0.0:${PORT}`);
     console.log(`Active Model: ${GEMMA_MODEL_ID} (${AI_PROVIDER})`);
   });
 }

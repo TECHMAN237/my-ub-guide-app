@@ -30,7 +30,7 @@ export const NotificationsView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-4 pb-24">
+    <div className="max-w-3xl mx-auto px-3 sm:px-5 py-3 sm:py-4 pb-28">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

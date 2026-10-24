@@ -188,7 +188,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
           <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
             <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
               <Sparkles className="w-3 h-3 text-[#1463F3]" />
-              <span>Gemma 4 • XENA Assistant</span>
+              <span>Gemma 4 • My UB Guide</span>
             </div>
 
             {/* Audio Voice Player Controls */}

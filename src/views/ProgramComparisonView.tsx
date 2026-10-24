@@ -142,7 +142,7 @@ export const ProgramComparisonView: React.FC = () => {
           className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#102A56] to-[#1463F3] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all"
         >
           <Bot className="w-4 h-4" />
-          <span>Ask XENA AI to analyze differences and recommend one</span>
+          <span>Ask My UB Guide to analyze differences and recommend one</span>
         </button>
       </div>
     </div>

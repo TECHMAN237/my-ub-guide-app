@@ -123,7 +123,7 @@ export const AdmissionsChecklistView: React.FC = () => {
           </div>
           <div>
             <h4 className="text-xs font-bold text-[#17233B]">Need help with required documents?</h4>
-            <p className="text-[11px] text-slate-500">Ask XENA AI to verify specific faculty requirements.</p>
+            <p className="text-[11px] text-slate-500">Ask My UB Guide to verify specific faculty requirements.</p>
           </div>
         </div>
 

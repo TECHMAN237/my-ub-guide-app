@@ -1,6 +1,7 @@
 import { UserProfile, ChatMessage, ChatSource } from '../types';
 import { AI_CONFIG, validateGemmaConfiguration } from '../config/aiConfig';
 import { searchKnowledge, getDeterministicAnswer } from './knowledgeService';
+import { searchKnowledgeBase } from '../lib/ai/knowledgeBase';
 
 export interface GemmaChatRequest {
   message: string;
@@ -61,8 +62,8 @@ export class GemmaChatService {
       );
     }
 
-    // Grounding: Retrieve institutional facts and documents
-    const retrieved = searchKnowledge(message, userProfile);
+    // Grounding: Retrieve institutional facts and documents from University of Buea knowledge base
+    const retrieved = searchKnowledgeBase(message, userProfile);
 
     // Explicit test/mock mode for unit tests or offline demonstrations
     if (forceMockMode) {

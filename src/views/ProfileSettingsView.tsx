@@ -288,7 +288,7 @@ export const ProfileSettingsView: React.FC = () => {
         >
           <div className="flex items-center gap-3">
             <Info className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">About XENA AI</span>
+            <span className="text-xs font-semibold text-[#17233B]">About My UB Guide</span>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-400" />
         </button>

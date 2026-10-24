@@ -38,7 +38,7 @@ export const ProgramsListView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-4 pb-24">
+    <div className="max-w-3xl mx-auto px-3 sm:px-5 py-3 sm:py-4 pb-28">
       {/* Page Title */}
       <div className="mb-4">
         <h1 className="text-xl font-bold text-[#17233B] tracking-tight">

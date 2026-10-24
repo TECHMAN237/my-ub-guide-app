@@ -103,7 +103,7 @@ export const ResourceDetailView: React.FC<ResourceDetailViewProps> = ({ resource
             className="flex items-center gap-1.5 text-xs font-bold text-[#1463F3] bg-[#EEF5FF] px-3 py-1.5 rounded-xl hover:bg-blue-100 transition-colors"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>{isFr ? 'Interroger XENA sur ce texte' : 'Ask AI About This Guide'}</span>
+            <span>{isFr ? 'Interroger My UB Guide sur ce texte' : 'Ask AI About This Guide'}</span>
           </button>
         </div>
       </div>

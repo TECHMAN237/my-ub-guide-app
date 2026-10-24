@@ -27,16 +27,16 @@ export const DedicatedChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.5rem-4rem)] pb-20 max-w-2xl mx-auto px-4 pt-2">
+    <div className="flex flex-col min-h-[calc(100vh-3.25rem-4rem)] pb-28 max-w-3xl mx-auto px-3 sm:px-4 pt-2">
       {/* Conversation Top Action Bar */}
       <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#E1E8F2]">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1463F3] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center shrink-0">
             <Bot className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-sm font-bold text-[#17233B] leading-tight truncate max-w-[180px] sm:max-w-xs">
-              {activeConversation?.title || 'Academic Assistant'}
+              {activeConversation?.title || 'My UB Guide Assistant'}
             </h2>
             <p className="text-[10px] text-slate-400">
               {activeConversation?.messages.length || 0} messages in thread

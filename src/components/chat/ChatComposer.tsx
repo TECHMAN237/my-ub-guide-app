@@ -52,7 +52,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
   const isFr = language === 'fr';
 
   const defaultPlaceholder = isFr
-    ? 'Posez votre question à XENA ou appuyez sur le micro...'
+    ? 'Posez votre question à My UB Guide ou appuyez sur le micro...'
     : 'Ask anything about your university or tap mic...';
 
   // Format seconds to mm:ss

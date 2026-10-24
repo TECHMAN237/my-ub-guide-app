@@ -76,7 +76,7 @@ export const HistoryView: React.FC = () => {
         <div className="text-center py-12 bg-white rounded-3xl border border-[#E1E8F2] p-6 shadow-2xs">
           <MessageSquare className="w-10 h-10 text-slate-300 mx-auto mb-2" />
           <p className="text-sm font-semibold text-slate-700 mb-1">No conversation history</p>
-          <p className="text-xs text-slate-400 mb-4">Start a new orientation chat with XENA AI.</p>
+          <p className="text-xs text-slate-400 mb-4">Start a new orientation chat with My UB Guide.</p>
           <button
             type="button"
             onClick={() => {

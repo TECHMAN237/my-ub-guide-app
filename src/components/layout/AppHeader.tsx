@@ -46,7 +46,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         ) : null}
 
         {title ? (
-          <h1 className="text-base font-semibold text-[#17233B] truncate max-w-[200px] sm:max-w-xs">
+          <h1 className="text-sm sm:text-base font-semibold text-[#17233B] truncate max-w-[200px] sm:max-w-xs">
             {title}
           </h1>
         ) : (
@@ -55,18 +55,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             onClick={() => navigateTo('/home')}
             className="flex items-center gap-2 text-left group"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#102A56] to-[#1463F3] flex items-center justify-center text-white shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#102A56] to-[#1463F3] flex items-center justify-center text-white shadow-xs shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div>
+            <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-[#17233B] group-hover:text-[#1463F3] transition-colors">
-                  XENA AI
+                <span className="font-bold text-sm tracking-tight text-[#17233B] group-hover:text-[#1463F3] transition-colors leading-tight">
+                  My UB Guide
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Assistant Online" />
               </div>
-              <p className="text-[10px] text-slate-400 font-medium leading-none">
-                {userCategory === 'enrolled' ? 'Enrolled Student' : 'UniGuide Assistant'}
+              <p className="text-[10px] text-slate-400 font-medium leading-tight">
+                {userCategory === 'enrolled' ? 'Enrolled Student' : 'University Guide'}
               </p>
             </div>
           </button>

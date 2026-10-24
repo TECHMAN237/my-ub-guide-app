@@ -28,19 +28,33 @@ import { ProfileSettingsView } from './views/ProfileSettingsView';
 import { AdminView } from './views/AdminView';
 
 const MainLayout: React.FC = () => {
-  const { currentRoute } = useApp();
+  const { currentRoute, userProfile, isLoggedIn } = useApp();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Full-screen onboarding / auth views where top app header & bottom nav are hidden
   const isFullScreenView =
     currentRoute === '/' ||
-    currentRoute === '/setup/user-type' ||
+    currentRoute === '/welcome' ||
+    currentRoute === '/auth/login' ||
     currentRoute === '/auth/signup' ||
-    currentRoute === '/auth/login';
+    currentRoute === '/setup/user-type' ||
+    currentRoute === '/setup/profile';
 
   const renderCurrentView = () => {
     switch (currentRoute) {
       case '/':
+        // Default entry page: LoginView for unauthenticated visitors, HomeChatView for authenticated users
+        if (userProfile || isLoggedIn) {
+          return <HomeChatView />;
+        }
+        return <LoginView />;
+      case '/auth/login':
+        if (userProfile || isLoggedIn) {
+          return <HomeChatView />;
+        }
+        return <LoginView />;
+      case '/welcome':
+      case '/landing':
         return <SplashView />;
       case '/setup/user-type':
         return <UserTypeSelectionView />;
@@ -48,8 +62,6 @@ const MainLayout: React.FC = () => {
         return <ProfileSetupView />;
       case '/auth/signup':
         return <SignUpView />;
-      case '/auth/login':
-        return <LoginView />;
       case '/home':
         return <HomeChatView />;
       case '/chat':
@@ -97,7 +109,10 @@ const MainLayout: React.FC = () => {
         if (currentRoute.startsWith('/chat/')) {
           return <DedicatedChatView />;
         }
-        return <HomeChatView />;
+        if (userProfile || isLoggedIn) {
+          return <HomeChatView />;
+        }
+        return <LoginView />;
     }
   };
 

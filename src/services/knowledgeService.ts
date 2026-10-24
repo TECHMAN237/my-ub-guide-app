@@ -256,8 +256,8 @@ export function getDeterministicAnswer(
   const userName = userProfile?.name || (isFr ? 'cher étudiant' : 'Student');
   return {
     text: isFr
-      ? `Bonjour ${userName}. En tant qu'assistant d'orientation universitaire **XENA AI**, je peux vous renseigner précisément sur les programmes académiques, les frais de scolarité, les conditions d'admission, les dates du calendrier, le système de crédits LMD et la vie sur le campus.\n\nQue souhaitez-vous savoir en détail ?`
-      : `Hello ${userName}. As your **XENA AI** university assistant, I can provide verified institutional information on degree programs, school fees, admission requirements, academic calendars, credit limits, and university regulations.\n\nWhat would you like to explore?`,
+      ? `Bonjour ${userName}. En tant qu'assistant d'orientation universitaire **My UB Guide**, je peux vous renseigner précisément sur les programmes académiques, les frais de scolarité, les conditions d'admission, les dates du calendrier, le système de crédits LMD et la vie sur le campus.\n\nQue souhaitez-vous savoir en détail ?`
+      : `Hello ${userName}. As your **My UB Guide** university assistant, I can provide verified institutional information on degree programs, school fees, admission requirements, academic calendars, credit limits, and university regulations.\n\nWhat would you like to explore?`,
     sources: [
       { title: 'Student Handbook & Academic Prospectus', category: 'Institutional Record', url: '/resources/res-handbook' }
     ],
