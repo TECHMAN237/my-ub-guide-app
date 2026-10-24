@@ -1,0 +1,6 @@
+{
+  "name": "XENA AI - University Orientation Assistant",
+  "description": "AI-powered university information and orientation assistant for prospective and enrolled students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
