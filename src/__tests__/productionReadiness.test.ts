@@ -51,11 +51,11 @@ describe('My UB Guide Production-Readiness Review', () => {
       json: vi.fn()
     };
 
-    // Test rejection of non-Gemma model
-    await chatHandler({ method: 'POST', body: { message: 'Hello', modelId: 'gemini-3.8-flash' } }, mockResGemini);
+    // Test rejection of unsupported model family
+    await chatHandler({ method: 'POST', body: { message: 'Hello', modelId: 'unsupported-custom-model' } }, mockResGemini);
     expect(mockResGemini.status).toHaveBeenCalledWith(400);
     expect(mockResGemini.json).toHaveBeenCalledWith(
-      expect.objectContaining({ error: expect.stringContaining('Only Google Gemma models are permitted') })
+      expect.objectContaining({ error: expect.stringContaining('Only permitted Google models are allowed') })
     );
   });
 
