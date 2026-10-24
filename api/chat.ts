@@ -10,20 +10,32 @@ const getSecretApiKey = (): string | undefined => {
 };
 
 export default async function handler(req: any, res: any) {
+  // Support POST requests for chat
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: 'Method not allowed. Use POST for /api/chat.' });
     return;
   }
 
   try {
-    const { message, history, userProfile, retrievedContext, language } = req.body || {};
+    // Safely parse JSON body if needed
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch {
+        body = {};
+      }
+    }
+    body = body || {};
+
+    const { message, history, userProfile, retrievedContext, language } = body;
 
     if (!message || typeof message !== 'string' || !message.trim()) {
       res.status(400).json({ error: 'A valid non-empty user message is required' });
       return;
     }
 
-    const targetModel = (req.body?.modelId || GEMMA_MODEL_ID).toLowerCase();
+    const targetModel = (body.modelId || GEMMA_MODEL_ID).toLowerCase();
     if (!targetModel.includes('gemma')) {
       res.status(400).json({
         error: `Model "${targetModel}" is rejected. Only Google Gemma models are permitted for the university chatbot.`,
@@ -50,10 +62,12 @@ export default async function handler(req: any, res: any) {
       }
     });
 
+    // Server-side knowledge base retrieval
     const knowledgeResult = retrievedContext
       ? { contextText: retrievedContext, sources: [], evidenceStatus: 'Supported by official university sources' as const }
       : searchKnowledgeBase(message, userProfile);
 
+    // Get centralized instructions
     const baseInstructions = getSystemInstruction({ userProfile, language });
 
     const fullSystemInstruction = `${baseInstructions}
@@ -96,9 +110,9 @@ ${knowledgeResult.contextText || 'No specific section matched. Provide general a
       suggestedFollowUps: followUps
     });
   } catch (error: any) {
-    console.error(`Error during Gemma (${GEMMA_MODEL_ID}) serverless inference:`, error);
+    console.error(`Error during Gemma (${GEMMA_MODEL_ID}) Vercel serverless inference:`, error);
     res.status(500).json({
-      error: `Gemma inference error (${GEMMA_MODEL_ID}): ${error.message || 'Unknown model error'}`,
+      error: `Gemma inference error (${GEMMA_MODEL_ID}): ${error.message || 'Unknown server error'}`,
       modelId: GEMMA_MODEL_ID,
       fallbackNeeded: false
     });

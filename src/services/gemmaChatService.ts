@@ -1,6 +1,6 @@
 import { UserProfile, ChatMessage, ChatSource } from '../types';
 import { AI_CONFIG, validateGemmaConfiguration } from '../config/aiConfig';
-import { searchKnowledge, getDeterministicAnswer } from './knowledgeService';
+import { getDeterministicAnswer } from './knowledgeService';
 import { searchKnowledgeBase } from '../lib/ai/knowledgeBase';
 
 export interface GemmaChatRequest {
@@ -36,7 +36,7 @@ export class GemmaChatService {
 
   /**
    * Generates a grounded university answer using the configured Google Gemma model.
-   * Interacts with the backend Gemma inference adapter without falling back to Gemini.
+   * Interacts with the backend Gemma inference endpoint without falling back to Gemini.
    */
   public async generateUniversityAnswer(request: GemmaChatRequest): Promise<GemmaChatResponse> {
     const {
@@ -129,7 +129,29 @@ export class GemmaChatService {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          const errMsg = errorData.error || `Server responded with HTTP ${response.status}`;
+          let errMsg = errorData.error;
+
+          if (!errMsg) {
+            if (response.status === 404) {
+              errMsg = language === 'fr'
+                ? "L'endpoint de l'assistant IA (/api/chat) est introuvable (404). Si le projet est déployé sur Vercel, déclenchez un nouveau déploiement pour activer la fonction Serverless."
+                : "The assistant API route (/api/chat) was not found (HTTP 404). Please ensure Vercel Serverless Functions are deployed.";
+            } else if (response.status === 503) {
+              errMsg = language === 'fr'
+                ? "Le service de modèle Gemma est indisponible. Veuillez vérifier que 'gemma_api_key' est configuré dans Vercel."
+                : "The Gemma model service is unavailable. Please verify that 'gemma_api_key' is configured in Vercel.";
+            } else if (response.status === 429) {
+              errMsg = language === 'fr'
+                ? "Limite de requêtes atteinte pour la clé API Gemma. Veuillez patienter avant de réessayer."
+                : "Rate limit reached for the Gemma API key. Please wait a moment and try again.";
+            } else if (response.status === 401 || response.status === 403) {
+              errMsg = language === 'fr'
+                ? "Clé API Gemma invalide ou non autorisée. Veuillez vérifier la variable 'gemma_api_key' dans Vercel."
+                : "Invalid or unauthorized Gemma API key. Please check the 'gemma_api_key' variable in Vercel.";
+            } else {
+              errMsg = `Server responded with HTTP ${response.status}`;
+            }
+          }
 
           // Rate limit (429) or transient 503: retry with backoff
           if ((response.status === 429 || response.status === 503) && attempt < maxRetries) {
