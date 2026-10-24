@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Clock,
   ArrowUpRight,
-  Bell
+  Maximize2,
+  MessageSquare
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ChatMessageItem } from '../components/chat/ChatMessageItem';
@@ -75,32 +76,31 @@ export const HomeChatView: React.FC = () => {
   // Primary fee reference
   const primaryFee = INITIAL_FEES[0];
 
-  // Latest notification
-  const latestNotification = INITIAL_NOTIFICATIONS[0];
-
   return (
-    <div className="min-h-[calc(100vh-3.25rem-4rem)] pb-28 max-w-4xl mx-auto px-3 sm:px-5 pt-2 sm:pt-3 space-y-4 sm:space-y-5">
+    <div className="min-h-[calc(100vh-3.25rem-4rem)] pb-28 max-w-4xl mx-auto px-3 sm:px-5 pt-2 sm:pt-3 space-y-4 sm:space-y-5 font-sans">
       {/* =========================================================================
-          SECTION B: MAIN AI CHATBOT CONTAINER (CENTRAL PROMINENT FOCUS)
+          SECTION B: COMPACT MAIN AI CHATBOT CONTAINER
           ========================================================================= */}
       <section
         aria-label="University Assistant"
         className="bg-white border border-[#E1E8F2] rounded-3xl shadow-xs overflow-hidden flex flex-col transition-all"
       >
-        {/* B.1 Assistant Identity & Status & B.2 Conversation Controls */}
-        <div className="bg-gradient-to-r from-[#102A56] via-[#144796] to-[#1463F3] text-white p-4 sm:p-5 relative overflow-hidden">
+        {/* B.1 Compact Assistant Header */}
+        <div className="bg-gradient-to-r from-[#102A56] via-[#144796] to-[#1463F3] text-white px-3.5 py-3 sm:px-5 sm:py-3.5 relative overflow-hidden">
           <div className="absolute -right-4 -bottom-6 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <div className="absolute right-12 top-2 w-16 h-16 rounded-full bg-blue-300/20 blur-md pointer-events-none" />
 
-          {/* Top Bar: Identity & Status + Action Controls */}
-          <div className="relative z-10 flex items-center justify-between gap-3 mb-3">
+          {/* Top Row: Identity & Primary Actions */}
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5">
+            
+            {/* Assistant Identity & Online Status */}
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-inner">
-                <Bot className="w-5 h-5 text-white drop-shadow-xs" />
+              <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-inner">
+                <Bot className="w-5 h-5 text-white" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-base font-bold tracking-tight text-white leading-tight">
+                  <h1 className="text-sm sm:text-base font-bold text-white leading-tight">
                     My UB Guide
                   </h1>
                   <span className="flex items-center gap-1 bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 text-[10px] font-semibold px-2 py-0.5 rounded-full">
@@ -108,15 +108,27 @@ export const HomeChatView: React.FC = () => {
                     <span>Online</span>
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] text-blue-200">
-                  <Sparkles className="w-3 h-3 text-amber-300" />
-                  <span>Google Gemma 4 • Verified Regulations</span>
+                <div className="flex items-center gap-1 text-[11px] text-blue-200">
+                  <Sparkles className="w-3 h-3 text-amber-300 shrink-0" />
+                  <span className="truncate max-w-[200px] sm:max-w-none">Google Gemma 4 • Verified Knowledge Base</span>
                 </div>
               </div>
             </div>
 
-            {/* Conversation Controls */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            {/* Conversation Actions & Prominent Open Full Chat Button */}
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+              
+              {/* Prominent Open Full Chat CTA */}
+              <button
+                type="button"
+                onClick={() => navigateTo('/chat')}
+                className="h-8 px-3 rounded-xl bg-white text-[#1463F3] hover:bg-blue-50 font-bold text-xs flex items-center gap-1.5 shadow-2xs hover:shadow-xs transition-all active:scale-95 cursor-pointer"
+                title="Open full-screen chat interface"
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-[#1463F3]" />
+                <span>Open Full Chat</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => navigateTo('/history')}
@@ -130,40 +142,39 @@ export const HomeChatView: React.FC = () => {
               <button
                 type="button"
                 onClick={createNewConversation}
-                className="flex items-center gap-1 text-xs font-semibold bg-white/20 hover:bg-white/30 border border-white/25 text-white px-2.5 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer shadow-2xs"
+                className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 border border-white/25 text-white flex items-center justify-center transition-colors cursor-pointer"
                 title="Start a new chat"
+                aria-label="Start a new chat"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">New Chat</span>
+                <Plus className="w-4 h-4" />
               </button>
+
             </div>
+
           </div>
 
-          {/* Student Welcome Greeting */}
-          <div className="relative z-10 pt-1">
-            <p className="text-xs font-semibold text-blue-200 mb-0.5">
-              {isEnrolled ? `Welcome back, ${studentName}! 👋` : 'Welcome prospective student! 👋'}
-            </p>
-            <p className="text-xs text-blue-100/90 leading-relaxed max-w-2xl">
+          {/* Compact Student Greeting */}
+          <div className="relative z-10 pt-2 text-[11px] sm:text-xs text-blue-100/90 leading-tight">
+            <span>
               {isEnrolled
-                ? `I'm your academic orientation assistant for ${userProfile?.faculty || 'Faculty of Science'}. Ask about credit caps, course registration, exam regulations, or fee deadlines.`
-                : 'I can guide you through accredited degree programs, entry requirements, tuition schedules, deadlines, and student life.'}
-            </p>
+                ? `Welcome back, ${studentName}! Ask about credits, registration, fees, or exam schedules.`
+                : `Welcome ${studentName}! Ask about programs, entry criteria, tuition fees, or deadlines.`}
+            </span>
           </div>
         </div>
 
-        {/* B.3 Conversation Content Thread */}
-        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-end min-h-[140px] max-h-[520px] overflow-y-auto space-y-3 bg-[#F6F8FC]/50">
+        {/* B.2 Compact Conversation Preview Thread (Bounded max-height with internal scroll) */}
+        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-end min-h-[120px] max-h-[260px] sm:max-h-[300px] overflow-y-auto space-y-3 bg-[#F6F8FC]/50 border-b border-[#E1E8F2]">
           {!hasMessages ? (
-            <div className="py-4 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#1463F3] flex items-center justify-center mx-auto mb-2 border border-blue-100">
-                <Bot className="w-6 h-6" />
+            <div className="py-3 text-center">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center mx-auto mb-1.5 border border-blue-100">
+                <Bot className="w-5 h-5" />
               </div>
-              <h2 className="text-sm font-bold text-[#17233B] mb-1">
+              <h2 className="text-xs font-bold text-[#17233B] mb-0.5">
                 How can I assist you right now?
               </h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Type your question or choose one of the suggested topics below. Voice recording and French translation are supported.
+              <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
+                Ask a question or tap a suggested topic below. Voice recording supported.
               </p>
             </div>
           ) : (
@@ -181,7 +192,7 @@ export const HomeChatView: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-[#EEF5FF] text-[#1463F3] border border-[#1463F3]/20 flex items-center justify-center animate-pulse shrink-0">
                     <Bot className="w-4 h-4" />
                   </div>
-                  <div className="bg-white border border-[#E1E8F2] rounded-2xl px-4 py-2.5 shadow-2xs flex items-center gap-2">
+                  <div className="bg-white border border-[#E1E8F2] rounded-2xl px-3.5 py-2 shadow-2xs flex items-center gap-2">
                     <div className="flex gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#1463F3] animate-bounce" />
                       <span className="w-1.5 h-1.5 rounded-full bg-[#1463F3] animate-bounce [animation-delay:0.2s]" />
@@ -198,13 +209,20 @@ export const HomeChatView: React.FC = () => {
           )}
         </div>
 
-        {/* B.4 Suggested Questions Chips */}
-        <div className="px-3 sm:px-4 py-2 bg-white border-t border-[#E1E8F2]">
+        {/* B.3 Suggested Questions Chips */}
+        <div className="px-3 sm:px-4 py-2 bg-white border-b border-[#E1E8F2]">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-              Suggested questions
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              Suggested topics
             </span>
-            <span className="text-[10px] text-[#1463F3] font-semibold">1-Tap Prompt</span>
+            <button
+              type="button"
+              onClick={() => navigateTo('/chat')}
+              className="text-[10px] text-[#1463F3] hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
+            >
+              <span>Full Chat</span>
+              <ChevronRight className="w-3 h-3" />
+            </button>
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -222,8 +240,8 @@ export const HomeChatView: React.FC = () => {
           </div>
         </div>
 
-        {/* B.5 Message Input & B.6 Send / Mic Controls (ChatComposer) */}
-        <div className="p-3 sm:p-4 bg-white border-t border-[#E1E8F2]">
+        {/* B.4 Compact Message Composer */}
+        <div className="p-3 sm:p-3.5 bg-white">
           <ChatComposer
             onSendMessage={sendMessage}
             isSending={isSendingMessage}
@@ -231,8 +249,8 @@ export const HomeChatView: React.FC = () => {
             onRetry={retryLastMessage}
             placeholder={
               isEnrolled
-                ? 'Ask about credits, exams, course registration...'
-                : 'Ask about programs, admission requirements, fees...'
+                ? 'Ask about credits, exams, registration...'
+                : 'Ask about programs, fees, admissions...'
             }
           />
         </div>
@@ -303,8 +321,8 @@ export const HomeChatView: React.FC = () => {
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Fee Deadlines</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Installments & bank</p>
+                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Fees & Bank</h3>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Installments & portal</p>
                 </div>
               </button>
             </>
@@ -320,7 +338,7 @@ export const HomeChatView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-[#17233B] leading-tight">Programs</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Faculties & degrees</p>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Degrees & faculties</p>
                 </div>
               </button>
 
@@ -334,7 +352,7 @@ export const HomeChatView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-[#17233B] leading-tight">Admissions</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Criteria & checklist</p>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Requirements & steps</p>
                 </div>
               </button>
 
@@ -348,7 +366,7 @@ export const HomeChatView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-[#17233B] leading-tight">School Fees</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Prospectus & totals</p>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Tuition breakdown</p>
                 </div>
               </button>
 
@@ -362,7 +380,7 @@ export const HomeChatView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-[#17233B] leading-tight">Calendar</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Academic dates</p>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Application dates</p>
                 </div>
               </button>
             </>
@@ -371,164 +389,116 @@ export const HomeChatView: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          SECTION D: DASHBOARD AND OVERVIEW (BALANCED RESPONSIVE GRID)
+          SECTION D: DASHBOARD OVERVIEW CARDS (INFORMATION RIGOR)
           ========================================================================= */}
-      <section aria-label="Dashboard & Overview">
-        <div className="flex items-center justify-between mb-2.5 px-1">
+      <section aria-label="Academic Dashboard Overview" className="space-y-3">
+        <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Academic Overview & Milestones
+            Academic Overview
           </h2>
-          <span className="text-[11px] text-slate-400 font-medium">Session 2025/2026</span>
+          <span className="text-[11px] text-slate-400 font-medium">Updated 2025/2026</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
-          {/* Card 1: Academic Calendar Milestone */}
-          <div className="bg-white border border-[#E1E8F2] rounded-2xl p-4 shadow-2xs flex flex-col justify-between hover:border-[#1463F3]/40 transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Card 1: Checklist Progress */}
+          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <Calendar className="w-4 h-4 text-[#1463F3]" />
-                  <span>Next Milestone</span>
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Checklist Tracker
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#1463F3] px-2 py-0.5 rounded-md">
-                  {nextMilestone.status}
+                <span className="text-xs font-bold text-[#1463F3] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                  {completedChecklistCount}/{INITIAL_CHECKLIST.length} Done
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-[#17233B] mb-1">
+                {nextChecklistItem.title}
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                {nextChecklistItem.description}
+              </p>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => navigateTo('/admissions/checklist')}
+                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Full Checklist</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+            </div>
+          </div>
+
+          {/* Card 2: Upcoming Calendar Milestone */}
+          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Academic Calendar
+                </span>
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                  {nextMilestone.status.toUpperCase()}
                 </span>
               </div>
               <h3 className="text-sm font-bold text-[#17233B] mb-1">
                 {nextMilestone.title}
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed mb-3">
+              <p className="text-xs text-[#1463F3] font-semibold mb-1">
+                {nextMilestone.displayDate}
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed truncate">
                 {nextMilestone.description}
               </p>
             </div>
 
-            <div className="pt-2 border-t border-[#E1E8F2] flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                <span>{nextMilestone.displayDate}</span>
-              </span>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => navigateTo('/academic-calendar')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-0.5 cursor-pointer"
+                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <span>View Schedule</span>
+                <span>View Full Schedule</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </div>
           </div>
 
-          {/* Card 2: Admissions & Orientation Checklist */}
-          <div className="bg-white border border-[#E1E8F2] rounded-2xl p-4 shadow-2xs flex flex-col justify-between hover:border-[#1463F3]/40 transition-colors">
+          {/* Card 3: School Fees Primary Notice */}
+          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <FileCheck2 className="w-4 h-4 text-emerald-600" />
-                  <span>Orientation Progress</span>
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Tuition Fee Reference
                 </span>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                  {completedChecklistCount} of {INITIAL_CHECKLIST.length} Done
-                </span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-2">
-                <div
-                  className="bg-[#1463F3] h-full rounded-full transition-all duration-500"
-                  style={{ width: `${(completedChecklistCount / INITIAL_CHECKLIST.length) * 100}%` }}
-                />
-              </div>
-
-              <p className="text-xs text-slate-600 mb-1">
-                <span className="font-semibold text-slate-800">Next Step: </span>
-                {nextChecklistItem.title}
-              </p>
-              <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-                {nextChecklistItem.description}
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-[#E1E8F2] flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">Personalized Checklist</span>
-              <button
-                type="button"
-                onClick={() => navigateTo('/admissions/checklist')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-0.5 cursor-pointer"
-              >
-                <span>Open Checklist</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Card 3: School Fees & Financial Overview */}
-          <div className="bg-white border border-[#E1E8F2] rounded-2xl p-4 shadow-2xs flex flex-col justify-between hover:border-[#1463F3]/40 transition-colors">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <CreditCard className="w-4 h-4 text-amber-600" />
-                  <span>Tuition & Fees</span>
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                  Official Rate
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-[#17233B] mb-0.5">
-                {primaryFee.programName}
-              </h3>
-              <p className="text-base font-extrabold text-[#102A56] mb-1">
-                {primaryFee.totalFee.toLocaleString()} {primaryFee.currency}
-              </p>
-              <p className="text-[11px] text-slate-500 leading-relaxed mb-3">
-                {primaryFee.paymentSchedule}
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-[#E1E8F2] flex items-center justify-between">
-              <span className="text-[11px] font-medium text-slate-500">
-                Deadline: 30 Oct 2025
-              </span>
-              <button
-                type="button"
-                onClick={() => navigateTo('/fees')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-0.5 cursor-pointer"
-              >
-                <span>Fee Guide</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Card 4: Latest University Notice */}
-          <div className="bg-white border border-[#E1E8F2] rounded-2xl p-4 shadow-2xs flex flex-col justify-between hover:border-[#1463F3]/40 transition-colors">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-                  <Bell className="w-4 h-4 text-purple-600" />
-                  <span>University Notice</span>
-                </span>
-                <span className="text-[10px] font-semibold text-slate-400">
-                  {latestNotification.date}
+                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                  INSTALLMENTS
                 </span>
               </div>
               <h3 className="text-sm font-bold text-[#17233B] mb-1">
-                {latestNotification.title}
+                {primaryFee.programName}
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed mb-3">
-                {latestNotification.message}
+              <p className="text-sm font-extrabold text-[#17233B] mb-1">
+                {primaryFee.totalFee.toLocaleString()} {primaryFee.currency} <span className="text-xs font-normal text-slate-500">/ year</span>
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                60% 1st installment due upon registration.
               </p>
             </div>
 
-            <div className="pt-2 border-t border-[#E1E8F2] flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">Academic Senate</span>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => navigateTo('/notifications')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-0.5 cursor-pointer"
+                onClick={() => navigateTo('/fees')}
+                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <span>All Notices</span>
+                <span>Fee Schedules & Banks</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
+              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
             </div>
           </div>
         </div>

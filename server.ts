@@ -22,11 +22,17 @@ app.use(express.json({ limit: '15mb' }));
 const GEMMA_MODEL_ID = process.env.GEMMA_MODEL_ID || 'gemma-4-26b-a4b-it';
 const AI_PROVIDER = process.env.AI_PROVIDER || 'google-genai';
 
-// Initialize Google Gen AI with required telemetry header
+// Helper to resolve secret API key from Vercel / environment (supports gemma_api_key, GEMMA_API_KEY, GEMINI_API_KEY)
+const getSecretApiKey = (): string | undefined => {
+  return process.env.gemma_api_key || process.env.GEMMA_API_KEY || process.env.GEMINI_API_KEY;
+};
+
+// Initialize Google Gen AI client with telemetry header
+const activeApiKey = getSecretApiKey();
 let aiClient: GoogleGenAI | null = null;
-if (process.env.GEMINI_API_KEY) {
+if (activeApiKey) {
   aiClient = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: activeApiKey,
     httpOptions: {
       headers: {
         'User-Agent': 'aistudio-build'
@@ -37,13 +43,15 @@ if (process.env.GEMINI_API_KEY) {
 
 // GET /api/model-info endpoint - transparently identifies active Gemma model
 app.get('/api/model-info', (_req: Request, res: Response) => {
+  const currentKey = getSecretApiKey();
   res.json({
     modelId: GEMMA_MODEL_ID,
     modelFamily: 'Google Gemma',
     provider: AI_PROVIDER,
     speechToTextEnabled: true,
     textToSpeechEnabled: true,
-    languages: ['en', 'fr']
+    languages: ['en', 'fr'],
+    apiKeyConfigured: Boolean(currentKey && currentKey.length > 0)
   });
 });
 
@@ -52,8 +60,8 @@ app.post('/api/chat', async (req: Request, res: Response) => {
   try {
     const { message, history, userProfile, retrievedContext, language } = req.body;
 
-    if (!message || typeof message !== 'string') {
-      res.status(400).json({ error: 'Message is required' });
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      res.status(400).json({ error: 'A valid non-empty user message is required' });
       return;
     }
 
@@ -67,15 +75,25 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       return;
     }
 
-    if (!aiClient) {
+    const currentKey = getSecretApiKey();
+    if (!currentKey) {
       res.status(503).json({
-        error: `Gemma model (${GEMMA_MODEL_ID}) inference requires GEMINI_API_KEY to be configured on the server.`,
+        error: `Gemma model (${GEMMA_MODEL_ID}) inference requires the secret environment variable 'gemma_api_key' to be configured in Vercel.`,
         fallbackNeeded: false
       });
       return;
     }
 
-    // Perform server-side knowledge retrieval if context is not already supplied
+    const client = aiClient || new GoogleGenAI({
+      apiKey: currentKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build'
+        }
+      }
+    });
+
+    // Perform server-side knowledge retrieval from UB AI Student Companion Knowledge Base
     const knowledgeResult = retrievedContext
       ? { contextText: retrievedContext, sources: [], evidenceStatus: 'Supported by official university sources' as const }
       : searchKnowledgeBase(message, userProfile);
@@ -85,7 +103,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 
     const fullSystemInstruction = `${baseInstructions}
 
-VERIFIED INSTITUTIONAL KNOWLEDGE EVIDENCE (UNIVERSITY OF BUEA):
+VERIFIED INSTITUTIONAL KNOWLEDGE EVIDENCE (UNIVERSITY OF BUEA - UB AI STUDENT COMPANION KNOWLEDGE BASE):
 ${knowledgeResult.contextText || 'No specific section matched. Provide general academic guidance and advise confirming with the faculty office.'}`;
 
     // Format prompt preamble for Gemma instruction tuning
@@ -100,7 +118,7 @@ ${knowledgeResult.contextText || 'No specific section matched. Provide general a
 
     fullPrompt += `User: ${message}\nAssistant:`;
 
-    const response = await aiClient.models.generateContent({
+    const response = await client.models.generateContent({
       model: GEMMA_MODEL_ID,
       contents: fullPrompt,
       config: {
@@ -126,7 +144,7 @@ ${knowledgeResult.contextText || 'No specific section matched. Provide general a
     });
   } catch (error: any) {
     console.error(`Error during Gemma (${GEMMA_MODEL_ID}) inference:`, error);
-    // Explicit error reporting without silently falling back to Gemini
+    // Explicit error reporting without silently falling back to Gemini or exposing private credentials
     res.status(500).json({
       error: `Gemma inference error (${GEMMA_MODEL_ID}): ${error.message || 'Unknown model error'}`,
       modelId: GEMMA_MODEL_ID,
@@ -145,10 +163,18 @@ app.post('/api/voice/transcribe', async (req: Request, res: Response) => {
       return;
     }
 
-    // If Google GenAI client is available, use auxiliary audio understanding for transcription
-    if (aiClient) {
+    const currentKey = getSecretApiKey();
+    if (currentKey) {
       try {
-        const audioBuffer = Buffer.from(audioBase64, 'base64');
+        const client = aiClient || new GoogleGenAI({
+          apiKey: currentKey,
+          httpOptions: {
+            headers: {
+              'User-Agent': 'aistudio-build'
+            }
+          }
+        });
+
         const audioPart = {
           inlineData: {
             data: audioBase64,
@@ -160,7 +186,7 @@ app.post('/api/voice/transcribe', async (req: Request, res: Response) => {
           ? "Transcrivez fidèlement cet enregistrement audio en français. Renvoyez uniquement la transcription exacte mot pour mot, sans guillemets ni commentaires."
           : "Transcribe this audio recording accurately. Output only the verbatim transcript, without quotes or additional comments.";
 
-        const response = await aiClient.models.generateContent({
+        const response = await client.models.generateContent({
           model: 'gemini-3.8-flash', // Auxiliary model strictly used for audio understanding
           contents: [audioPart, promptText]
         });
@@ -194,13 +220,12 @@ app.post('/api/voice/transcribe', async (req: Request, res: Response) => {
 // POST /api/voice/synthesize endpoint - Text-to-Speech
 app.post('/api/voice/synthesize', async (req: Request, res: Response) => {
   try {
-    const { text, language = 'en' } = req.body;
+    const { text } = req.body;
     if (!text) {
       res.status(400).json({ error: 'Text is required for speech synthesis' });
       return;
     }
 
-    // Browser speech synthesis is fully active and client-coordinated
     res.json({
       enabled: true,
       message: 'Browser speech synthesis active'
@@ -220,15 +245,23 @@ app.post('/api/translate', async (req: Request, res: Response) => {
       return;
     }
 
-    // If source and target language are the same, return as-is
     if (sourceLanguage === targetLanguage) {
       res.json({ translatedText: text, detectedSourceLanguage: sourceLanguage });
       return;
     }
 
-    // Use native Gemini API client for high-accuracy translation
-    if (aiClient) {
+    const currentKey = getSecretApiKey();
+    if (currentKey) {
       try {
+        const client = aiClient || new GoogleGenAI({
+          apiKey: currentKey,
+          httpOptions: {
+            headers: {
+              'User-Agent': 'aistudio-build'
+            }
+          }
+        });
+
         const langTarget = targetLanguage === 'fr' ? 'French' : 'English';
         const prompt = `You are the official translator for University of Buea orientation portal. Translate the following text into ${langTarget}.
 RULES:
@@ -238,7 +271,7 @@ RULES:
 Text to translate:
 ${text}`;
 
-        const response = await aiClient.models.generateContent({
+        const response = await client.models.generateContent({
           model: 'gemini-3.8-flash',
           contents: prompt
         });
@@ -256,7 +289,6 @@ ${text}`;
       }
     }
 
-    // Fallback: return original text intact to prevent content degradation
     res.json({
       translatedText: text,
       detectedSourceLanguage: sourceLanguage || 'auto'
