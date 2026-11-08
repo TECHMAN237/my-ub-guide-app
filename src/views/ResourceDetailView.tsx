@@ -1,112 +1,102 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Bookmark, Copy, Check, MessageSquare, ShieldCheck, Download } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { INITIAL_RESOURCES } from '../data/mockData';
+import { ResourceDocument } from '../types';
 
-interface ResourceDetailViewProps {
-  resourceId?: string;
-}
+const CATEGORY_LABELS: Record<ResourceDocument['category'], string> = {
+  handbook: 'Handbook',
+  regulations: 'Regulations',
+  registration: 'Registration',
+  'credit-system': 'Credit system',
+  fees: 'Fees',
+  exams: 'Examinations',
+  accommodation: 'Accommodation',
+  forms: 'Forms',
+  guides: 'Guides',
+};
 
-export const ResourceDetailView: React.FC<ResourceDetailViewProps> = ({ resourceId }) => {
-  const { navigate, language, toggleSaveItem, isItemSaved, sendMessage, routeParams, currentRoute } = useApp();
-  const [copied, setCopied] = useState(false);
+const QUICK_LINKS = [
+  { label: 'Fee schedules and payment', route: '/fees' },
+  { label: 'Academic calendar', route: '/academic-calendar' },
+  { label: 'Faculties and departments', route: '/departments' },
+];
 
-  const isFr = language === 'fr';
+export const ResourceDetailView: React.FC = () => {
+  const { goBack, navigateTo, resources, routeParams } = useApp();
+  const resourceId =
+    routeParams?.resourceId || window.location.pathname.split('/')[2];
+  const resource = resources.find((r) => r.id === resourceId) ?? resources[0];
 
-  const effectiveId = resourceId || routeParams?.resourceId || (currentRoute.startsWith('/resources/') ? currentRoute.replace('/resources/', '') : 'res-handbook');
-  const resource = INITIAL_RESOURCES.find((r) => r.id === effectiveId) || INITIAL_RESOURCES[0];
-  const saved = isItemSaved(resource.title);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(resource.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleAskAIAboutResource = () => {
-    sendMessage(
-      isFr
-        ? `Pouvez-vous m'expliquer les points clés du document "${resource.title}" (${resource.description}) ?`
-        : `Can you explain the key regulations and implications of the document "${resource.title}"?`
+  if (!resource) {
+    return (
+      <div className="mx-auto w-full max-w-[720px] px-5 pb-28 pt-4 sm:px-8 md:pb-16">
+        <button
+          type="button"
+          onClick={goBack}
+          className="-ml-2 flex h-11 w-11 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <h1 className="page-title mt-4 text-ink">Resource not found</h1>
+        <p className="page-lede mt-1">This document is not available.</p>
+      </div>
     );
-    navigate('/home');
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-[#F6F8FC] pb-24 p-4 sm:p-6 max-w-2xl mx-auto w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+    <div className="mx-auto w-full max-w-[720px] px-5 pb-28 pt-4 sm:px-8 md:pb-16">
+      <div className="flex items-start gap-2">
         <button
-          onClick={() => navigate('/resources')}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-[#17233B] hover:bg-slate-200"
+          type="button"
+          onClick={goBack}
+          className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+          aria-label="Go back"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ArrowLeft className="h-5 w-5" />
         </button>
-        <span className="text-xs font-semibold text-[#68758B] uppercase tracking-wider">
-          {resource.category}
-        </span>
-        <button
-          onClick={() =>
-            toggleSaveItem({
-              type: 'resource',
-              title: resource.title,
-              subtitle: resource.description,
-              data: resource
-            })
-          }
-          className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${
-            saved ? 'bg-[#EEF5FF] border-blue-300 text-[#1463F3]' : 'border-slate-200 text-slate-400'
-          }`}
-        >
-          <Bookmark className={`w-4 h-4 ${saved ? 'fill-[#1463F3]' : ''}`} />
-        </button>
+        <div className="min-w-0 pt-1">
+          <p className="text-[14px] text-muted">{CATEGORY_LABELS[resource.category]}</p>
+          <h1 className="page-title mt-1 text-ink">{resource.title}</h1>
+          <p className="page-lede mt-1">{resource.description}</p>
+        </div>
       </div>
 
-      {/* Resource Document Container */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E1E8F2] shadow-2xs mb-6">
-        <h1 className="text-xl font-extrabold text-[#17233B] tracking-tight mb-2">
-          {resource.title}
-        </h1>
-        <p className="text-xs text-[#68758B] mb-4">
-          {resource.description}
-        </p>
-
-        {/* Source provenance */}
-        <div className="flex flex-wrap items-center gap-3 py-2 px-3 rounded-xl bg-[#F6F8FC] border border-slate-100 text-[11px] text-[#68758B] mb-5">
-          <div className="flex items-center gap-1.5 text-[#1463F3] font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>{resource.officialSource}</span>
-          </div>
-          <span>·</span>
-          <span>{resource.lastUpdated}</span>
-          <span>·</span>
-          <span>{resource.fileFormat}</span>
-        </div>
-
-        {/* Document Body */}
-        <div className="prose prose-sm max-w-none text-xs text-[#17233B] leading-relaxed whitespace-pre-wrap font-sans border-t border-slate-100 pt-4">
-          {resource.content}
-        </div>
-
-        {/* Action bar */}
-        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs text-[#68758B] hover:text-[#1463F3] font-medium"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? (isFr ? 'Texte copié !' : 'Copied!') : (isFr ? 'Copier le texte' : 'Copy Text')}</span>
-          </button>
-
-          <button
-            onClick={handleAskAIAboutResource}
-            className="flex items-center gap-1.5 text-xs font-bold text-[#1463F3] bg-[#EEF5FF] px-3 py-1.5 rounded-xl hover:bg-blue-100 transition-colors"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>{isFr ? 'Interroger My UB Guide sur ce texte' : 'Ask AI About This Guide'}</span>
-          </button>
-        </div>
+      <div className="measure mt-8 whitespace-pre-line text-[16px] leading-relaxed text-ink">
+        {resource.content}
       </div>
+
+      <dl className="measure mt-8 border-t border-rule pt-4 text-[14px]">
+        <div className="flex flex-wrap justify-between gap-x-4 py-1">
+          <dt className="text-muted">Format</dt>
+          <dd className="text-ink">{resource.fileFormat}</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-4 py-1">
+          <dt className="text-muted">Last updated</dt>
+          <dd className="text-ink">{resource.lastUpdated}</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-4 py-1">
+          <dt className="text-muted">Source</dt>
+          <dd className="text-right text-ink">{resource.officialSource}</dd>
+        </div>
+      </dl>
+
+      <section className="mt-8">
+        <h2 className="text-[18px] font-semibold text-ink">Related</h2>
+        <div className="mt-1">
+          {QUICK_LINKS.map((link) => (
+            <button
+              key={link.route}
+              type="button"
+              onClick={() => navigateTo(link.route)}
+              className="row-link w-full text-left"
+            >
+              <span className="text-[16px] text-ink">{link.label}</span>
+              <ArrowRight className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

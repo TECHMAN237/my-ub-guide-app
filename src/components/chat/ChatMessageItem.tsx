@@ -4,14 +4,11 @@ import {
   Check,
   Bookmark,
   ExternalLink,
-  ShieldCheck,
   Volume2,
-  VolumeX,
-  Pause,
+  Square,
   Play,
-  RotateCcw,
-  Sparkles,
-  Mic
+  Pause,
+  Mic,
 } from 'lucide-react';
 import { ChatMessage, Language } from '../../types';
 import { RobotAvatar } from '../common/RobotAvatar';
@@ -33,7 +30,6 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
   const isSaved = isItemSaved(message.text.substring(0, 40));
   const isFr = language === 'fr';
 
-  // Synchronize playing state with global TTS service
   useEffect(() => {
     const checkStatus = () => {
       const activeId = ttsService.getActiveMessageId();
@@ -60,12 +56,14 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
     toggleSaveItem({
       type: 'answer',
       title: message.text.substring(0, 45) + '...',
-      subtitle: message.sources && message.sources.length > 0 ? message.sources[0].title : 'Gemma AI Guidance',
-      data: message
+      subtitle:
+        message.sources && message.sources.length > 0
+          ? message.sources[0].title
+          : 'UB Compass answer',
+      data: message,
     });
   };
 
-  // Text-to-Speech Playback Controls
   const handleTogglePlaySpeech = () => {
     if (isPlaying) {
       ttsService.pause();
@@ -98,7 +96,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
         onError: () => {
           setIsPlaying(false);
           setIsPaused(false);
-        }
+        },
       });
     }
   };
@@ -111,13 +109,13 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
 
   if (isUser) {
     return (
-      <div className="flex justify-end mb-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
-        <div className="max-w-[85%] sm:max-w-[75%] bg-[#1463F3] text-white rounded-2xl rounded-tr-xs px-4 py-3 shadow-xs">
-          <p className="text-sm font-normal leading-relaxed whitespace-pre-wrap">{message.text}</p>
-          <div className="flex items-center justify-end gap-1 text-[10px] text-blue-200 mt-1">
+      <div className="mb-4 flex justify-end">
+        <div className="max-w-[85%] rounded-[10px] bg-raised px-4 py-3 sm:max-w-[75%]">
+          <p className="whitespace-pre-wrap text-[16px] leading-relaxed text-ink">{message.text}</p>
+          <div className="mt-1.5 flex items-center justify-end gap-1.5 text-[14px] text-muted">
             {message.isVoiceInput && (
-              <span className="flex items-center gap-0.5" title="Sent via voice input">
-                <Mic className="w-2.5 h-2.5" />
+              <span title={isFr ? 'Envoyé par la voix' : 'Sent by voice'}>
+                <Mic className="h-3.5 w-3.5" aria-hidden="true" />
               </span>
             )}
             <span>{message.timestamp}</span>
@@ -127,27 +125,36 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
     );
   }
 
-  // Format simple markdown into styled elements (bullet points, bold, headings)
   const renderFormattedText = (raw: string) => {
     const lines = raw.split('\n');
     return lines.map((line, idx) => {
       if (line.startsWith('### ')) {
-        return <h4 key={idx} className="font-bold text-sm text-[#17233B] mt-2 mb-1">{line.replace('### ', '')}</h4>;
+        return (
+          <h4 key={idx} className="mb-1 mt-3 text-[16px] font-semibold text-ink">
+            {line.replace('### ', '')}
+          </h4>
+        );
       }
       if (line.startsWith('## ')) {
-        return <h3 key={idx} className="font-bold text-base text-[#17233B] mt-2 mb-1">{line.replace('## ', '')}</h3>;
+        return (
+          <h3 key={idx} className="mb-1 mt-3 text-[18px] font-semibold text-ink">
+            {line.replace('## ', '')}
+          </h3>
+        );
       }
       if (line.startsWith('# ')) {
-        return <h2 key={idx} className="font-bold text-base text-[#17233B] mt-2 mb-1">{line.replace('# ', '')}</h2>;
+        return (
+          <h3 key={idx} className="mb-1 mt-3 text-[18px] font-semibold text-ink">
+            {line.replace('# ', '')}
+          </h3>
+        );
       }
       if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
         const itemContent = line.replace(/^[•\-\*]\s+/, '');
         return (
-          <div key={idx} className="flex items-start gap-2 my-1 pl-1">
-            <span className="text-[#1463F3] text-xs font-bold leading-none mt-1">●</span>
-            <span className="text-sm text-[#17233B] leading-relaxed">
-              {parseBold(itemContent)}
-            </span>
+          <div key={idx} className="my-1 flex items-start gap-2.5">
+            <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-muted" aria-hidden="true" />
+            <span className="text-[16px] leading-relaxed text-ink">{parseBold(itemContent)}</span>
           </div>
         );
       }
@@ -155,9 +162,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
         const match = line.match(/^(\d+)\.\s+(.*)/);
         if (match) {
           return (
-            <div key={idx} className="flex items-start gap-2 my-1 pl-1">
-              <span className="text-xs font-bold text-[#1463F3] w-4 shrink-0">{match[1]}.</span>
-              <span className="text-sm text-[#17233B] leading-relaxed">{parseBold(match[2])}</span>
+            <div key={idx} className="my-1 flex items-start gap-2.5">
+              <span className="tnum w-5 shrink-0 text-[16px] leading-relaxed text-muted">
+                {match[1]}.
+              </span>
+              <span className="text-[16px] leading-relaxed text-ink">{parseBold(match[2])}</span>
             </div>
           );
         }
@@ -165,7 +174,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
       if (line.trim() === '') {
         return <div key={idx} className="h-2" />;
       }
-      return <p key={idx} className="text-sm text-[#17233B] leading-relaxed my-0.5">{parseBold(line)}</p>;
+      return (
+        <p key={idx} className="my-0.5 text-[16px] leading-relaxed text-ink">
+          {parseBold(line)}
+        </p>
+      );
     });
   };
 
@@ -173,145 +186,117 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, onSel
     const parts = str.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="font-semibold text-[#102A56]">{part.slice(2, -2)}</strong>;
+        return (
+          <strong key={i} className="font-semibold text-ink">
+            {part.slice(2, -2)}
+          </strong>
+        );
       }
       return part;
     });
   };
 
   return (
-    <div className="flex items-start gap-2.5 mb-5 animate-in fade-in slide-in-from-bottom-2 duration-150">
-      <RobotAvatar size="sm" className="mt-1" />
-      <div className="flex-1 max-w-[90%] sm:max-w-[85%]">
-        <div className="bg-white border border-[#E1E8F2] rounded-2xl rounded-tl-xs p-4 shadow-xs">
-          {/* Header Badge: Gemma Model Attribution */}
-          <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-              <Sparkles className="w-3 h-3 text-[#1463F3]" />
-              <span>Gemma 4 • My UB Guide</span>
-            </div>
+    <div className="mb-5 flex items-start gap-3">
+      <RobotAvatar size="sm" />
+      <div className="min-w-0 flex-1">
+        <div className="rounded-[10px] bg-surface px-4 py-4 sm:px-5">
+          <div className="text-ink">{renderFormattedText(message.text)}</div>
 
-            {/* Audio Voice Player Controls */}
-            <div className="flex items-center gap-1">
-              {isPlaying && (
-                <div className="flex items-center gap-0.5 mr-1.5">
-                  <span className="w-1 h-2.5 bg-[#1463F3] rounded-full animate-bounce" />
-                  <span className="w-1 h-3.5 bg-[#1463F3] rounded-full animate-bounce delay-75" />
-                  <span className="w-1 h-2 bg-[#1463F3] rounded-full animate-bounce delay-150" />
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={handleTogglePlaySpeech}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer ${
-                  isPlaying || isPaused
-                    ? 'bg-blue-100 text-[#1463F3]'
-                    : 'text-slate-500 hover:text-[#1463F3] hover:bg-slate-50'
-                }`}
-                title={
-                  isPlaying
-                    ? (isFr ? 'Mettre en pause' : 'Pause speech')
-                    : isPaused
-                    ? (isFr ? 'Reprendre la lecture' : 'Resume speech')
-                    : (isFr ? 'Écouter la réponse' : 'Listen to answer')
-                }
-                aria-label="Listen to answer"
-              >
-                {isPlaying ? (
-                  <Pause className="w-3 h-3 fill-current" />
-                ) : (
-                  <Volume2 className="w-3 h-3" />
-                )}
-                <span>{isPlaying ? 'Pause' : isPaused ? (isFr ? 'Reprendre' : 'Resume') : (isFr ? 'Écouter' : 'Listen')}</span>
-              </button>
-
-              {(isPlaying || isPaused) && (
-                <button
-                  type="button"
-                  onClick={handleStopSpeech}
-                  className="p-1 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
-                  title={isFr ? 'Arrêter la lecture' : 'Stop speech'}
-                  aria-label="Stop speech"
-                >
-                  <VolumeX className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="text-sm text-[#17233B] leading-relaxed">
-            {renderFormattedText(message.text)}
-          </div>
-
-          {/* Sources Section (Matches Screen 7 in Reference Image) */}
           {message.sources && message.sources.length > 0 && (
-            <div className="mt-3.5 pt-3 border-t border-[#E1E8F2]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#68758B] mb-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#1463F3]" />
-                <span>{language === 'fr' ? 'Sources officielles' : 'Official Sources'}</span>
-              </div>
-              <div className="space-y-1.5">
+            <div className="mt-4 border-t border-rule pt-3">
+              <p className="mb-1 text-[14px] font-medium text-muted">
+                {isFr ? 'Sources officielles' : 'Official sources'}
+              </p>
+              <div>
                 {message.sources.map((src, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => {
                       if (src.url) navigate(src.url);
                     }}
-                    className="w-full flex items-center justify-between gap-2 p-2 rounded-lg bg-[#F6F8FC] hover:bg-[#EEF5FF] border border-[#E1E8F2] transition-colors text-left group cursor-pointer"
+                    className="row-link w-full min-h-[52px] text-left"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="w-2 h-2 rounded-full bg-[#1463F3]" />
-                      <div className="truncate">
-                        <p className="text-xs font-medium text-[#17233B] group-hover:text-[#1463F3] truncate">
-                          {src.title}
-                        </p>
-                        <p className="text-[10px] text-[#68758B]">
-                          {src.category} {src.lastUpdated ? `· ${src.lastUpdated}` : ''}
-                        </p>
-                      </div>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-[#68758B] group-hover:text-[#1463F3] shrink-0" />
+                    <span className="min-w-0">
+                      <span className="block truncate text-[16px] font-medium text-ink">
+                        {src.title}
+                      </span>
+                      <span className="block text-[14px] text-muted">
+                        {src.category} {src.lastUpdated ? `· ${src.lastUpdated}` : ''}
+                      </span>
+                    </span>
+                    {src.url && (
+                      <ExternalLink className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+                    )}
                   </button>
                 ))}
               </div>
             </div>
           )}
+        </div>
 
-          {/* Action Bar: Timestamp, Copy, Save */}
-          <div className="mt-3 pt-2 flex items-center justify-between text-xs text-[#68758B]">
-            <span className="text-[10px]">{message.timestamp}</span>
-            <div className="flex items-center gap-2">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[14px] text-muted">
+          <span>{message.timestamp}</span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleTogglePlaySpeech}
+              className="inline-flex min-h-[36px] items-center gap-1.5 rounded-[10px] px-2 transition-colors hover:bg-raised hover:text-ink"
+              aria-label={
+                isPlaying
+                  ? isFr
+                    ? 'Mettre la réponse en pause'
+                    : 'Pause reading the answer'
+                  : isFr
+                    ? 'Lire la réponse à voix haute'
+                    : 'Read the answer aloud'
+              }
+            >
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              <span>{isPlaying ? (isFr ? 'Pause' : 'Pause') : isFr ? 'Lire' : 'Listen'}</span>
+            </button>
+            {(isPlaying || isPaused) && (
               <button
-                onClick={handleCopy}
-                title="Copy answer"
-                className="flex items-center gap-1 p-1 hover:text-[#1463F3] transition-colors cursor-pointer"
+                type="button"
+                onClick={handleStopSpeech}
+                className="inline-flex min-h-[36px] items-center gap-1.5 rounded-[10px] px-2 transition-colors hover:bg-raised hover:text-ink"
+                aria-label={isFr ? 'Arrêter la lecture' : 'Stop reading'}
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span className="text-[11px]">{copied ? 'Copied' : 'Copy'}</span>
+                <Square className="h-3.5 w-3.5 fill-current" />
               </button>
-              <button
-                onClick={handleToggleSave}
-                title="Save answer"
-                className={`flex items-center gap-1 p-1 transition-colors cursor-pointer ${
-                  isSaved ? 'text-[#1463F3] font-medium' : 'hover:text-[#1463F3]'
-                }`}
-              >
-                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-[#1463F3]' : ''}`} />
-                <span className="text-[11px]">{isSaved ? 'Saved' : 'Save'}</span>
-              </button>
-            </div>
+            )}
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex min-h-[36px] items-center gap-1.5 rounded-[10px] px-2 transition-colors hover:bg-raised hover:text-ink"
+              aria-label={isFr ? 'Copier la réponse' : 'Copy the answer'}
+            >
+              {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
+              <span>{copied ? (isFr ? 'Copié' : 'Copied') : isFr ? 'Copier' : 'Copy'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleToggleSave}
+              className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-[10px] px-2 transition-colors hover:bg-raised ${
+                isSaved ? 'font-medium text-accent' : 'hover:text-ink'
+              }`}
+              aria-label={isFr ? 'Enregistrer la réponse' : 'Save the answer'}
+            >
+              <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+              <span>{isSaved ? (isFr ? 'Enregistré' : 'Saved') : isFr ? 'Enregistrer' : 'Save'}</span>
+            </button>
           </div>
         </div>
 
-        {/* Suggested Follow-ups */}
         {message.suggestedFollowUps && message.suggestedFollowUps.length > 0 && onSelectFollowUp && (
-          <div className="mt-2.5 flex flex-wrap gap-1.5 pl-1">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
             {message.suggestedFollowUps.map((q, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => onSelectFollowUp(q)}
-                className="text-xs bg-[#EEF5FF] text-[#1463F3] hover:bg-blue-100 border border-blue-200/60 rounded-full px-3 py-1 font-medium transition-colors text-left cursor-pointer"
+                className="min-h-[36px] text-left text-[14px] font-medium text-accent underline-offset-2 transition-colors hover:underline"
               >
                 {q}
               </button>

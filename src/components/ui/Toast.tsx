@@ -1,6 +1,5 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { CheckCircle2 } from 'lucide-react';
 
 export const Toast: React.FC = () => {
   const { toastMessage } = useApp();
@@ -8,9 +7,12 @@ export const Toast: React.FC = () => {
   if (!toastMessage) return null;
 
   return (
-    <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#102A56] text-white px-4 py-2.5 rounded-full shadow-lg text-xs font-medium flex items-center gap-2 border border-white/10 animate-bounce">
-      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-      <span>{toastMessage}</span>
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed bottom-24 left-1/2 z-50 w-[calc(100%-2.5rem)] max-w-[420px] -translate-x-1/2 rounded-[10px] border border-rule bg-raised px-4 py-3 text-[14px] text-ink md:bottom-8"
+    >
+      {toastMessage}
     </div>
   );
 };

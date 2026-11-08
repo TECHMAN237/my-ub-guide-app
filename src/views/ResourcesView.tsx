@@ -1,134 +1,64 @@
-import React, { useState } from 'react';
-import { Search, ChevronRight, BookOpen, FileText, Bookmark, ArrowLeft } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ResourceDocument } from '../types';
 
+const CATEGORY_LABELS: Record<ResourceDocument['category'], string> = {
+  handbook: 'Handbook',
+  regulations: 'Regulations',
+  registration: 'Registration',
+  'credit-system': 'Credit system',
+  fees: 'Fees',
+  exams: 'Examinations',
+  accommodation: 'Accommodation',
+  forms: 'Forms',
+  guides: 'Guides',
+};
+
 export const ResourcesView: React.FC = () => {
-  const { resources, navigateTo, isItemSaved, saveItem, removeItem } = useApp();
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const filteredResources = resources.filter((res) => {
-    const matchesSearch =
-      res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCat =
-      activeCategory === 'all' ||
-      (activeCategory === 'guides' && (res.category === 'guides' || res.category === 'fees' || res.category === 'registration' || res.category === 'accommodation')) ||
-      (activeCategory === 'forms' && res.category === 'forms') ||
-      (activeCategory === 'policies' && (res.category === 'handbook' || res.category === 'regulations' || res.category === 'credit-system' || res.category === 'exams'));
-
-    return matchesSearch && matchesCat;
-  });
-
-  const handleToggleSave = (e: React.MouseEvent, res: ResourceDocument) => {
-    e.stopPropagation();
-    if (isItemSaved('resource', res.id)) {
-      removeItem(res.id);
-    } else {
-      saveItem({
-        type: 'resource',
-        title: res.title,
-        subtitle: `${res.fileFormat} • ${res.lastUpdated}`,
-        data: res
-      });
-    }
-  };
+  const { goBack, navigateTo, resources } = useApp();
 
   return (
-    <div className="max-w-3xl mx-auto px-3 sm:px-5 py-3 sm:py-4 pb-28">
-      {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-xl font-bold text-[#17233B] tracking-tight">
-          Resources
-        </h1>
-        <p className="text-xs text-slate-500">
-          Official regulations, student handbooks, and registration guides.
-        </p>
+    <div className="mx-auto w-full max-w-[880px] px-5 pb-28 pt-4 sm:px-8 md:pb-16">
+      <div className="flex items-start gap-2">
+        <button
+          type="button"
+          onClick={goBack}
+          className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <div className="min-w-0 pt-1">
+          <h1 className="page-title text-ink">Resources</h1>
+          <p className="page-lede mt-1">
+            Official handbooks, regulations and guides for University of Buea students.
+          </p>
+        </div>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
-        {[
-          { id: 'all', label: 'All' },
-          { id: 'guides', label: 'Guides' },
-          { id: 'forms', label: 'Forms' },
-          { id: 'policies', label: 'Policies' },
-        ].map((tab) => (
+      <div className="mt-6">
+        {resources.map((resource) => (
           <button
-            key={tab.id}
+            key={resource.id}
             type="button"
-            onClick={() => setActiveCategory(tab.id)}
-            className={`px-4 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition-all cursor-pointer ${
-              activeCategory === tab.id
-                ? 'bg-[#1463F3] text-white shadow-xs'
-                : 'bg-white text-slate-600 border border-[#E1E8F2] hover:bg-slate-50'
-            }`}
+            onClick={() => navigateTo(`/resources/${resource.id}`)}
+            className="row-link w-full text-left"
           >
-            {tab.label}
+            <span className="min-w-0">
+              <span className="block text-[14px] text-muted">
+                {CATEGORY_LABELS[resource.category]}
+              </span>
+              <span className="mt-0.5 block text-[16px] font-medium text-ink">
+                {resource.title}
+              </span>
+              <span className="mt-0.5 block text-[14px] leading-relaxed text-muted">
+                {resource.description}
+              </span>
+            </span>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
           </button>
         ))}
-      </div>
-
-      {/* Search Input */}
-      <div className="relative mb-4">
-        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search handbooks, rules, guides..."
-          className="w-full bg-white border border-[#E1E8F2] focus:border-[#1463F3] focus:ring-2 focus:ring-[#1463F3]/15 rounded-xl pl-9.5 pr-4 py-2.5 text-xs text-[#17233B] focus:outline-hidden"
-        />
-      </div>
-
-      {/* Resource Cards List */}
-      <div className="space-y-2.5">
-        {filteredResources.map((res) => {
-          const isSaved = isItemSaved('resource', res.id);
-
-          return (
-            <div
-              key={res.id}
-              onClick={() => navigateTo(`/resources/${res.id}`, { resourceId: res.id })}
-              className="bg-white hover:bg-[#EEF5FF]/50 border border-[#E1E8F2] hover:border-[#1463F3] rounded-2xl p-4 transition-all shadow-2xs hover:shadow-xs flex items-center justify-between gap-3 cursor-pointer group"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xs font-bold text-[#17233B] group-hover:text-[#1463F3] transition-colors truncate">
-                    {res.title}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                    {res.description}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400">
-                    <span>{res.fileFormat}</span>
-                    <span>·</span>
-                    <span>Updated {res.lastUpdated}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={(e) => handleToggleSave(e, res)}
-                  className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                    isSaved ? 'text-[#1463F3] bg-blue-50' : 'text-slate-400 hover:text-slate-600'
-                  }`}
-                  title={isSaved ? 'Saved' : 'Save resource'}
-                >
-                  <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
-                </button>
-                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#1463F3] group-hover:translate-x-0.5 transition-all" />
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

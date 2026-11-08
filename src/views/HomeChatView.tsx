@@ -1,247 +1,192 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from "react";
 import {
-  Bot,
-  Sparkles,
+  ArrowRight,
   Plus,
-  Compass,
-  FileCheck2,
-  CreditCard,
-  Calendar,
-  GraduationCap,
   History,
-  ChevronRight,
-  Clock,
-  ArrowUpRight,
-  Maximize2,
-  MessageSquare
-} from 'lucide-react';
-import { useApp } from '../context/AppContext';
-import { ChatMessageItem } from '../components/chat/ChatMessageItem';
-import { ChatComposer } from '../components/chat/ChatComposer';
-import { INITIAL_CALENDAR_EVENTS, INITIAL_CHECKLIST, INITIAL_FEES, INITIAL_NOTIFICATIONS } from '../data/mockData';
+  BookOpen,
+  FileCheck2,
+  Wallet,
+  CalendarDays,
+  MessageCircle,
+  Check,
+  Compass,
+} from "lucide-react";
+import { useApp } from "../context/AppContext";
+import { ChatMessageItem } from "../components/chat/ChatMessageItem";
+import { ChatComposer } from "../components/chat/ChatComposer";
+import { RobotAvatar } from "../components/common/RobotAvatar";
 
 export const HomeChatView: React.FC = () => {
   const {
     userProfile,
+    language,
+    selectConversation,
     userCategory,
+    conversations,
     activeConversation,
     createNewConversation,
     sendMessage,
     isSendingMessage,
     chatError,
     retryLastMessage,
-    navigateTo
+    navigateTo,
+    checklist,
+    calendarEvents,
   } = useApp();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const isFr = language === "fr";
+  const isEnrolled = userCategory === "enrolled";
+
   useEffect(() => {
-    if (activeConversation?.messages && activeConversation.messages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (
+      activeConversation?.messages &&
+      activeConversation.messages.length > 0
+    ) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
     }
   }, [activeConversation?.messages, isSendingMessage]);
 
-  const studentName = userProfile?.name?.split(' ')[0] || (userCategory === 'enrolled' ? 'Ferdinand' : 'Student');
-  const isEnrolled = userCategory === 'enrolled';
+  const hasMessages = Boolean(
+    activeConversation && activeConversation.messages.length > 0,
+  );
 
-  const popularQuestions = isEnrolled
-    ? [
-        'How many credit units can I take?',
-        'How much are the school fees for Computer Science?',
-        'How do I register my courses?',
-        'When do first semester exams start?',
-        'Can I register additional credits with a 3.2 GPA?'
-      ]
-    : [
-        'What programs are offered?',
-        'How much are the school fees for Computer Science?',
-        'What are the admission requirements?',
-        'When is the application deadline?',
-        'What documents do I need to apply?'
-      ];
-
-  const handleQuestionClick = async (question: string) => {
-    await sendMessage(question);
+  const handleQuestionClick = (question: string) => {
+    sendMessage(question);
   };
 
-  const hasMessages = Boolean(activeConversation && activeConversation.messages.length > 0);
+  const recentQuestions = useMemo(() => {
+    const asked = conversations
+      .flatMap((conversation) => conversation.messages)
+      .filter((message) => message.sender === "user")
+      .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+      .map((message) => message.text);
+    const unique = Array.from(new Set(asked));
+    return unique.slice(0, 3);
+  }, [conversations]);
 
-  // Completed checklist count
-  const completedChecklistCount = INITIAL_CHECKLIST.filter((item) => item.completed).length;
-  const nextChecklistItem = INITIAL_CHECKLIST.find((item) => !item.completed) || INITIAL_CHECKLIST[0];
+  const fallbackQuestions = [
+    isFr ? "Quels programmes sont proposés ?" : "What programmes are offered?",
+    isFr ? "Quels sont les frais de scolarité ?" : "How much are school fees?",
+    isFr ? "Comment déposer ma candidature ?" : "How do I apply for admission?",
+  ];
+  const prompts =
+    recentQuestions.length > 0 ? recentQuestions : fallbackQuestions;
 
-  // Next upcoming calendar milestone
-  const nextMilestone = INITIAL_CALENDAR_EVENTS.find((event) => event.status === 'ongoing' || event.status === 'upcoming') || INITIAL_CALENDAR_EVENTS[0];
+  const nextChecklistItem = checklist.find((item) => !item.completed);
+  const nextMilestone = [...calendarEvents]
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    .find((event) => event.status === "ongoing" || event.status === "upcoming");
 
-  // Primary fee reference
-  const primaryFee = INITIAL_FEES[0];
+  const nextStep = isEnrolled
+    ? nextMilestone
+      ? {
+          label: nextMilestone.title,
+          detail: nextMilestone.displayDate,
+          route: "/academic-calendar",
+        }
+      : null
+    : nextChecklistItem
+      ? {
+          label: nextChecklistItem.title,
+          detail: nextChecklistItem.description,
+          route: "/admissions/checklist",
+        }
+      : null;
 
-  return (
-    <div className="min-h-[calc(100vh-3.25rem-4rem)] pb-28 max-w-4xl mx-auto px-3 sm:px-5 pt-2 sm:pt-3 space-y-4 sm:space-y-5 font-sans">
-      {/* =========================================================================
-          SECTION B: COMPACT MAIN AI CHATBOT CONTAINER
-          ========================================================================= */}
-      <section
-        aria-label="University Assistant"
-        className="bg-white border border-[#E1E8F2] rounded-3xl shadow-xs overflow-hidden flex flex-col transition-all"
-      >
-        {/* B.1 Compact Assistant Header */}
-        <div className="bg-gradient-to-r from-[#102A56] via-[#144796] to-[#1463F3] text-white px-3.5 py-3 sm:px-5 sm:py-3.5 relative overflow-hidden">
-          <div className="absolute -right-4 -bottom-6 w-32 h-32 rounded-full bg-white/10 blur-xl pointer-events-none" />
-          <div className="absolute right-12 top-2 w-16 h-16 rounded-full bg-blue-300/20 blur-md pointer-events-none" />
+  const links = [
+    {
+      label: "Programmes",
+      detail: isFr ? "Trouvez votre voie" : "Find your field of study",
+      route: "/programs",
+      icon: BookOpen,
+    },
+    {
+      label: "Admissions",
+      detail: isFr ? "Préparez votre candidature" : "Make your next move",
+      route: "/admissions",
+      icon: FileCheck2,
+    },
+    {
+      label: isFr ? "Frais de scolarité" : "School fees",
+      detail: isFr ? "Planifiez votre budget" : "Plan your university budget",
+      route: "/fees",
+      icon: Wallet,
+    },
+    {
+      label: isFr ? "Calendrier" : "Academic calendar",
+      detail: isFr ? "Gardez les dates en vue" : "Keep important dates in view",
+      route: "/academic-calendar",
+      icon: CalendarDays,
+    },
+  ];
+  const completed = checklist.filter((item) => item.completed).length;
+  const progress = checklist.length
+    ? Math.round((completed / checklist.length) * 100)
+    : 0;
+  const recentConversations = [...conversations]
+    .filter((c) => c.messages.length > 0)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, 3);
+  const firstName = userProfile?.name?.split(" ")[0];
+  const isGuest =
+    !userProfile || userProfile.email === "guest@student.uniguide.edu.cm";
 
-          {/* Top Row: Identity & Primary Actions */}
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5">
-            
-            {/* Assistant Identity & Online Status */}
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0 shadow-inner">
-                <Bot className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-sm sm:text-base font-bold text-white leading-tight">
-                    My UB Guide
-                  </h1>
-                  <span className="flex items-center gap-1 bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Online</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-[11px] text-blue-200">
-                  <Sparkles className="w-3 h-3 text-amber-300 shrink-0" />
-                  <span className="truncate max-w-[200px] sm:max-w-none">Google Gemma 4 • Verified Knowledge Base</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Conversation Actions & Prominent Open Full Chat Button */}
-            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-              
-              {/* Prominent Open Full Chat CTA */}
-              <button
-                type="button"
-                onClick={() => navigateTo('/chat')}
-                className="h-8 px-3 rounded-xl bg-white text-[#1463F3] hover:bg-blue-50 font-bold text-xs flex items-center gap-1.5 shadow-2xs hover:shadow-xs transition-all active:scale-95 cursor-pointer"
-                title="Open full-screen chat interface"
-              >
-                <Maximize2 className="w-3.5 h-3.5 text-[#1463F3]" />
-                <span>Open Full Chat</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/history')}
-                className="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
-                title="Conversation history"
-                aria-label="Conversation history"
-              >
-                <History className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={createNewConversation}
-                className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 border border-white/25 text-white flex items-center justify-center transition-colors cursor-pointer"
-                title="Start a new chat"
-                aria-label="Start a new chat"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-
-            </div>
-
-          </div>
-
-          {/* Compact Student Greeting */}
-          <div className="relative z-10 pt-2 text-[11px] sm:text-xs text-blue-100/90 leading-tight">
-            <span>
-              {isEnrolled
-                ? `Welcome back, ${studentName}! Ask about credits, registration, fees, or exam schedules.`
-                : `Welcome ${studentName}! Ask about programs, entry criteria, tuition fees, or deadlines.`}
-            </span>
-          </div>
-        </div>
-
-        {/* B.2 Compact Conversation Preview Thread (Bounded max-height with internal scroll) */}
-        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-end min-h-[120px] max-h-[260px] sm:max-h-[300px] overflow-y-auto space-y-3 bg-[#F6F8FC]/50 border-b border-[#E1E8F2]">
-          {!hasMessages ? (
-            <div className="py-3 text-center">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center mx-auto mb-1.5 border border-blue-100">
-                <Bot className="w-5 h-5" />
-              </div>
-              <h2 className="text-xs font-bold text-[#17233B] mb-0.5">
-                How can I assist you right now?
-              </h2>
-              <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
-                Ask a question or tap a suggested topic below. Voice recording supported.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {activeConversation?.messages.map((msg) => (
-                <ChatMessageItem
-                  key={msg.id}
-                  message={msg}
-                  onSelectFollowUp={handleQuestionClick}
-                />
-              ))}
-
-              {isSendingMessage && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#EEF5FF] text-[#1463F3] border border-[#1463F3]/20 flex items-center justify-center animate-pulse shrink-0">
-                    <Bot className="w-4 h-4" />
-                  </div>
-                  <div className="bg-white border border-[#E1E8F2] rounded-2xl px-3.5 py-2 shadow-2xs flex items-center gap-2">
-                    <div className="flex gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1463F3] animate-bounce" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1463F3] animate-bounce [animation-delay:0.2s]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1463F3] animate-bounce [animation-delay:0.4s]" />
-                    </div>
-                    <span className="text-xs text-slate-500 font-medium">
-                      Consulting official university regulations...
-                    </span>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-
-        {/* B.3 Suggested Questions Chips */}
-        <div className="px-3 sm:px-4 py-2 bg-white border-b border-[#E1E8F2]">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              Suggested topics
-            </span>
+  if (hasMessages) {
+    return (
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[760px] flex-col px-5 pb-28 sm:px-8 md:pb-10">
+        <div className="flex items-center justify-between gap-4 border-b border-rule py-3">
+          <h1 className="min-w-0 truncate text-[18px] font-semibold text-ink">
+            {activeConversation?.title || "Conversation"}
+          </h1>
+          <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
-              onClick={() => navigateTo('/chat')}
-              className="text-[10px] text-[#1463F3] hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
+              onClick={() => navigateTo("/history")}
+              className="flex h-11 w-11 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+              aria-label="Conversation history"
             >
-              <span>Full Chat</span>
-              <ChevronRight className="w-3 h-3" />
+              <History className="h-5 w-5" />
             </button>
-          </div>
-
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-            {popularQuestions.map((q, idx) => (
-              <button
-                key={idx}
-                type="button"
-                disabled={isSendingMessage}
-                onClick={() => handleQuestionClick(q)}
-                className="whitespace-nowrap shrink-0 text-xs text-[#1463F3] hover:text-[#102A56] bg-[#EEF5FF] hover:bg-blue-100 border border-[#1463F3]/20 px-3 py-1.5 rounded-xl transition-all font-medium cursor-pointer"
-              >
-                {q}
-              </button>
-            ))}
+            <button
+              type="button"
+              onClick={createNewConversation}
+              className="flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-[14px] font-medium text-ink transition-colors hover:bg-raised"
+            >
+              <Plus className="h-4 w-4" />
+              New
+            </button>
           </div>
         </div>
 
-        {/* B.4 Compact Message Composer */}
-        <div className="p-3 sm:p-3.5 bg-white">
+        <div className="flex-1 py-5">
+          {activeConversation?.messages.map((msg) => (
+            <ChatMessageItem
+              key={msg.id}
+              message={msg}
+              onSelectFollowUp={handleQuestionClick}
+            />
+          ))}
+
+          {isSendingMessage && (
+            <div className="mb-5 flex items-center gap-3">
+              <RobotAvatar size="sm" />
+              <span className="flex items-center gap-2 text-[14px] text-muted">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+                Checking the university knowledge base…
+              </span>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        <div className="sticky bottom-20 bg-ground pt-2 md:bottom-0">
           <ChatComposer
             onSendMessage={sendMessage}
             isSending={isSendingMessage}
@@ -249,260 +194,282 @@ export const HomeChatView: React.FC = () => {
             onRetry={retryLastMessage}
             placeholder={
               isEnrolled
-                ? 'Ask about credits, exams, registration...'
-                : 'Ask about programs, fees, admissions...'
+                ? "Ask about credits, exams or registration…"
+                : "Ask about programmes, fees or admissions…"
             }
           />
         </div>
-      </section>
+      </div>
+    );
+  }
 
-      {/* =========================================================================
-          SECTION C: QUICK ACTIONS (COMPACT RESPONSIVE ROW / GRID)
-          ========================================================================= */}
-      <section aria-label="Quick Actions">
-        <div className="flex items-center justify-between mb-2 px-1">
-          <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Quick Actions
-          </h2>
-          <span className="text-[11px] text-slate-400 font-medium">Academic Portal</span>
+  return (
+    <div className="home-page shell-width mx-auto pb-28 md:pb-16">
+      <div className="home-heading">
+        <div>
+          <p className="context-line">
+            {isFr ? "Votre guide étudiant" : "Your student companion"}
+          </p>
+          <h1>
+            {isGuest
+              ? isFr
+                ? "Trouvez votre voie à UB."
+                : "Find your way at UB."
+              : isFr
+                ? `À vos côtés, ${firstName}.`
+                : `A little direction, ${firstName}.`}
+          </h1>
+          <p className="page-lede mt-2">
+            {isFr
+              ? "Une question, une candidature, une prochaine étape. On commence ici."
+              : "A question, an application, a next step. It starts here."}
+          </p>
         </div>
+        <button
+          type="button"
+          className="home-profile"
+          onClick={() => navigateTo("/profile")}
+          aria-label={isFr ? "Ouvrir votre profil" : "Open your profile"}
+        >
+          <span className="profile-monogram">
+            {isGuest ? "G" : firstName?.charAt(0)}
+          </span>
+          <span>
+            {isGuest
+              ? isFr
+                ? "Espace invité"
+                : "Guest workspace"
+              : isFr
+                ? "Mon espace"
+                : "My workspace"}
+          </span>
+          <ArrowRight size={16} aria-hidden="true" />
+        </button>
+      </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
-          {isEnrolled ? (
-            <>
-              <button
-                type="button"
-                onClick={() => navigateTo('/academic-calendar')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Calendar</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Key dates & exams</p>
-                </div>
-              </button>
+      <div className="home-main-grid">
+        <section
+          className="assistant-panel"
+          aria-labelledby="assistant-heading"
+        >
+          <div className="section-kicker">
+            <Compass size={18} aria-hidden="true" />
+            <span>UB Compass</span>
+            <span className="assistant-language">English / Français</span>
+          </div>
+          <h2 id="assistant-heading">
+            {isFr ? "Une question sur UB ?" : "University questions?"}
+            <br />
+            <span>{isFr ? "Parlons-en." : "Let’s figure it out."}</span>
+          </h2>
+          <p>
+            {isFr
+              ? "Programmes, frais ou vie académique : posez votre question, à l’écrit ou à la voix."
+              : "From choosing a degree to understanding fees. Ask in your own words, or use your voice."}
+          </p>
+          <ChatComposer
+            onSendMessage={sendMessage}
+            isSending={isSendingMessage}
+            error={chatError}
+            onRetry={retryLastMessage}
+            placeholder={
+              isFr
+                ? "Que souhaitez-vous savoir ?"
+                : "What would you like to know?"
+            }
+          />
+          <div className="assistant-footnote">
+            <span className="status-dot" />
+            {isFr
+              ? "Réponses basées sur les informations de l’université"
+              : "Grounded in university information"}
+          </div>
+        </section>
 
-              <button
-                type="button"
-                onClick={() => navigateTo('/resources/res-course-reg')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
+        <section className="next-step-panel" aria-labelledby="next-heading">
+          <div className="section-kicker">
+            <span>
+              {isEnrolled
+                ? isFr
+                  ? "Vie académique"
+                  : "Your academic life"
+                : isFr
+                  ? "Votre candidature"
+                  : "Your application"}
+            </span>
+            <FileCheck2 size={18} aria-hidden="true" />
+          </div>
+          <h2 id="next-heading">
+            {nextStep
+              ? isFr
+                ? "Une étape à la fois."
+                : "One step at a time."
+              : isFr
+                ? "Vous êtes à jour."
+                : "You’re all caught up."}
+          </h2>
+          {!isEnrolled && checklist.length > 0 && (
+            <div className="application-progress">
+              <div>
+                <span>{isFr ? "Votre progression" : "Your progress"}</span>
+                <span>
+                  {completed} / {checklist.length}
+                </span>
+              </div>
+              <div
+                role="progressbar"
+                aria-label={
+                  isFr
+                    ? "Progression de la candidature"
+                    : "Application progress"
+                }
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                className="bar-track"
               >
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <FileCheck2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Registration</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Form A & validation</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/resources/res-credit-system')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <GraduationCap className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Credit Rules</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Caps & extra load</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/fees')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Fees & Bank</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Installments & portal</p>
-                </div>
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => navigateTo('/programs')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1463F3] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Compass className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Programs</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Degrees & faculties</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/admissions')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <FileCheck2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Admissions</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Requirements & steps</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/fees')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">School Fees</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Tuition breakdown</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigateTo('/academic-calendar')}
-                className="bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] p-3 rounded-2xl flex items-center gap-3 transition-all shadow-2xs group cursor-pointer text-left"
-              >
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[#17233B] leading-tight">Calendar</h3>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5">Application dates</p>
-                </div>
-              </button>
-            </>
+                <div className="bar-fill" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
           )}
-        </div>
-      </section>
+          <div className="next-step-body">
+            <p className="next-step-title">
+              {nextStep?.label ||
+                (isFr ? "Préparez la suite" : "Make room for what’s next")}
+            </p>
+            <p>
+              {nextStep?.detail ||
+                (isFr
+                  ? "Consultez le calendrier pour préparer votre prochaine étape."
+                  : "Check the academic calendar and plan ahead.")}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="next-step-action"
+            onClick={() => navigateTo(nextStep?.route || "/academic-calendar")}
+          >
+            {isFr ? "Voir la suite" : "See my next step"}
+            <ArrowRight size={18} aria-hidden="true" />
+          </button>
+        </section>
+      </div>
 
-      {/* =========================================================================
-          SECTION D: DASHBOARD OVERVIEW CARDS (INFORMATION RIGOR)
-          ========================================================================= */}
-      <section aria-label="Academic Dashboard Overview" className="space-y-3">
-        <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Academic Overview
+      <section className="explore-section" aria-labelledby="explore-heading">
+        <div className="section-heading">
+          <h2 id="explore-heading">
+            {isFr ? "Explorez l’université" : "Get to know your university"}
           </h2>
-          <span className="text-[11px] text-slate-400 font-medium">Updated 2025/2026</span>
+          <span>
+            {isFr
+              ? "L’essentiel, à portée de main"
+              : "The essentials, all in one place"}
+          </span>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Card 1: Checklist Progress */}
-          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Checklist Tracker
-                </span>
-                <span className="text-xs font-bold text-[#1463F3] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                  {completedChecklistCount}/{INITIAL_CHECKLIST.length} Done
-                </span>
+        <nav
+          className="explore-grid"
+          aria-label={isFr ? "Explorer l’université" : "Browse the university"}
+        >
+          {links.map(({ label, detail, route, icon: Icon }) => (
+            <button
+              type="button"
+              key={route}
+              onClick={() => navigateTo(route)}
+              className="explore-link"
+            >
+              <div>
+                <Icon size={20} strokeWidth={1.6} aria-hidden="true" />
+                <ArrowRight size={16} aria-hidden="true" />
               </div>
-              <h3 className="text-sm font-bold text-[#17233B] mb-1">
-                {nextChecklistItem.title}
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                {nextChecklistItem.description}
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => navigateTo('/admissions/checklist')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>View Full Checklist</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-            </div>
-          </div>
-
-          {/* Card 2: Upcoming Calendar Milestone */}
-          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Academic Calendar
-                </span>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                  {nextMilestone.status.toUpperCase()}
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-[#17233B] mb-1">
-                {nextMilestone.title}
-              </h3>
-              <p className="text-xs text-[#1463F3] font-semibold mb-1">
-                {nextMilestone.displayDate}
-              </p>
-              <p className="text-xs text-slate-500 leading-relaxed truncate">
-                {nextMilestone.description}
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => navigateTo('/academic-calendar')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>View Full Schedule</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-            </div>
-          </div>
-
-          {/* Card 3: School Fees Primary Notice */}
-          <div className="bg-white border border-[#E1E8F2] rounded-3xl p-4 shadow-2xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  Tuition Fee Reference
-                </span>
-                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                  INSTALLMENTS
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-[#17233B] mb-1">
-                {primaryFee.programName}
-              </h3>
-              <p className="text-sm font-extrabold text-[#17233B] mb-1">
-                {primaryFee.totalFee.toLocaleString()} {primaryFee.currency} <span className="text-xs font-normal text-slate-500">/ year</span>
-              </p>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                60% 1st installment due upon registration.
-              </p>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => navigateTo('/fees')}
-                className="text-xs font-bold text-[#1463F3] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>Fee Schedules & Banks</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-            </div>
-          </div>
-        </div>
+              <h3>{label}</h3>
+              <p>{detail}</p>
+            </button>
+          ))}
+        </nav>
       </section>
+
+      <div className="home-secondary-grid">
+        <section className="questions-panel" aria-labelledby="recent-questions">
+          <div className="section-heading">
+            <h2 id="recent-questions">
+              {recentQuestions.length
+                ? isFr
+                  ? "Vos questions récentes"
+                  : "Pick up a question"
+                : isFr
+                  ? "Un point de départ"
+                  : "A good place to start"}
+            </h2>
+            <MessageCircle size={18} aria-hidden="true" />
+          </div>
+          {prompts.map((question) => (
+            <button
+              key={question}
+              type="button"
+              onClick={() => handleQuestionClick(question)}
+              disabled={isSendingMessage}
+              className="question-row"
+            >
+              <span>{question}</span>
+              <ArrowRight size={16} aria-hidden="true" />
+            </button>
+          ))}
+        </section>
+        <section
+          className="recent-panel"
+          aria-labelledby="conversations-heading"
+        >
+          <div className="section-heading">
+            <h2 id="conversations-heading">
+              {isFr ? "Vos discussions" : "Your conversations"}
+            </h2>
+            <button
+              className="text-action"
+              type="button"
+              onClick={() => navigateTo("/history")}
+            >
+              {isFr ? "Tout voir" : "View all"}
+              <ArrowRight size={14} aria-hidden="true" />
+            </button>
+          </div>
+          {recentConversations.length ? (
+            recentConversations.map((conversation) => (
+              <button
+                className="question-row"
+                type="button"
+                key={conversation.id}
+                onClick={() => {
+                  selectConversation(conversation.id);
+                  navigateTo("/chat");
+                }}
+              >
+                <span>{conversation.title}</span>
+                <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            ))
+          ) : (
+            <div className="empty-conversations">
+              <History size={24} strokeWidth={1.4} aria-hidden="true" />
+              <p>
+                {isFr
+                  ? "Votre prochaine idée commence par une question."
+                  : "Your next idea starts with a question."}
+              </p>
+              <span>
+                {isFr
+                  ? "Vos discussions apparaîtront ici."
+                  : "Your conversations will find a home here."}
+              </span>
+            </div>
+          )}
+        </section>
+      </div>
+      <p className="home-bottom-note">
+        <Check size={14} aria-hidden="true" />
+        {isFr
+          ? "Pour les décisions importantes, vérifiez toujours les sources officielles de l’UB."
+          : "Making an important decision? Always confirm with UB’s official sources."}
+      </p>
     </div>
   );
 };

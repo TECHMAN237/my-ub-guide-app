@@ -1,14 +1,11 @@
-import { GemmaModelConfig } from '../types';
+import { AIModelConfig } from '../types';
 
 /**
- * Centralized AI Model Configuration for XENA AI.
+ * Centralized AI model configuration for UB Compass.
  *
- * ZERO-CONFIG ARCHITECTURE:
- * In Google AI Studio, no manual environment variables are required.
- * - The chatbot runs on Google Gemma (gemma-4-26b-a4b-it) via Google GenAI SDK.
- * - Auxiliary audio transcription & translation use the native GEMINI_API_KEY.
- * - Speech synthesis uses the browser's native Speech Synthesis API (zero external keys).
- * - All voice and translation features are enabled by default.
+ * Chat, translation and (where available) audio understanding run on a free
+ * OpenRouter model. The API key lives only in the server environment
+ * (`OPENROUTER_API_KEY`); nothing secret is exposed to the client.
  */
 
 // Reads Vite env vars on client, or process.env on Node
@@ -28,20 +25,27 @@ const getEnvVar = (key: string, defaultValue: string): string => {
   return defaultValue;
 };
 
-export const AI_CONFIG: GemmaModelConfig = {
-  provider: (getEnvVar('AI_PROVIDER', 'google-genai') as 'google-genai'),
-  modelId: getEnvVar('GEMMA_MODEL_ID', 'gemma-4-26b-a4b-it'),
-  displayName: 'Google Gemma 4 26B A4B IT',
+export const DEFAULT_MODEL_ID = 'nvidia/nemotron-3-ultra-550b-a55b:free';
+
+const configuredModel = getEnvVar('OPENROUTER_MODEL', getEnvVar('AI_MODEL_ID', DEFAULT_MODEL_ID));
+
+export const AI_CONFIG: AIModelConfig = {
+  provider: 'openrouter',
+  // Guard against legacy bare ids that OpenRouter cannot resolve.
+  modelId: configuredModel.includes('/') ? configuredModel : DEFAULT_MODEL_ID,
+  displayName: 'Nemotron 3 Ultra (free)',
   temperature: 0.7,
   maxOutputTokens: 1200,
-  requestTimeoutMs: 25000,
+  requestTimeoutMs: 30000,
   retryCount: 2
 };
 
 export const VOICE_CONFIG = {
-  speechToTextEnabled: getEnvVar('GOOGLE_SPEECH_TO_TEXT_ENABLED', 'true') === 'true',
-  textToSpeechEnabled: getEnvVar('GOOGLE_TEXT_TO_SPEECH_ENABLED', 'true') === 'true',
-  translationEnabled: getEnvVar('GOOGLE_TRANSLATION_ENABLED', 'true') === 'true',
+  // Server-side transcription is unavailable on OpenRouter; the browser Web
+  // Speech API is used instead.
+  speechToTextEnabled: getEnvVar('SPEECH_TO_TEXT_ENABLED', 'true') === 'true',
+  textToSpeechEnabled: getEnvVar('TEXT_TO_SPEECH_ENABLED', 'true') === 'true',
+  translationEnabled: getEnvVar('TRANSLATION_ENABLED', 'true') === 'true',
   maxRecordingDurationSeconds: 120,
   supportedMimeTypes: ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav'],
   supportedLanguages: ['en', 'fr'] as const,
@@ -49,24 +53,24 @@ export const VOICE_CONFIG = {
 };
 
 export function getAiModelDescription(): string {
-  return `Google Gemma (${AI_CONFIG.modelId}) via ${AI_CONFIG.provider}`;
+  return `OpenRouter model (${AI_CONFIG.modelId})`;
 }
 
 /**
- * Validates that the active model configuration strictly complies with the Gemma mandate.
- * Rejects any Gemini or non-Gemma model substitution.
+ * Validates that the active model id is an OpenRouter `vendor/model` id.
+ * Rejects bare ids from the old Google GenAI integration.
  */
-export function validateGemmaConfiguration(modelId: string = AI_CONFIG.modelId): {
+export function validateModelConfiguration(modelId: string = AI_CONFIG.modelId): {
   isValid: boolean;
   model: string;
   error?: string;
 } {
-  const normalized = modelId.toLowerCase();
-  if (!normalized.includes('gemma')) {
+  const normalized = modelId.trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._:-]*$/.test(normalized)) {
     return {
       isValid: false,
       model: modelId,
-      error: `Model "${modelId}" violates the mandatory Gemma requirement. Only official Google Gemma models (e.g. gemma-4-26b-a4b-it) are permitted for the university assistant.`
+      error: `Model "${modelId}" is not a valid OpenRouter id. Use "vendor/model", for example "nvidia/nemotron-3-ultra-550b-a55b:free".`
     };
   }
   return {

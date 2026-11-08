@@ -1,0 +1,15 @@
+{
+  "base": "http://localhost:3000",
+  "checks": [
+    "Guest entry reaches redesigned home",
+    "Next step reaches real admissions checklist",
+    "Programme search filters actual records",
+    "Saved programme persists after navigation and reload",
+    "Programme level and comparison controls work",
+    "Home switches between English and French",
+    "Chat pending, error and retry work with intercepted test responses",
+    "Nine routes at 1440, 768 and 390: one h1, no overflow or broken images",
+    "Reduced motion loads a still illustration and keeps primary action available",
+    "Keyboard skip link receives first focus"
+  ]
+}

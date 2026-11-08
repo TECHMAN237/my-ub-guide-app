@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { Bot, Plus, Trash2, History, ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, History } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { ChatMessageItem } from '../components/chat/ChatMessageItem';
 import { ChatComposer } from '../components/chat/ChatComposer';
+import { RobotAvatar } from '../components/common/RobotAvatar';
 
 export const DedicatedChatView: React.FC = () => {
   const {
@@ -13,124 +14,113 @@ export const DedicatedChatView: React.FC = () => {
     isSendingMessage,
     chatError,
     retryLastMessage,
-    navigateTo
+    navigateTo,
+    language,
   } = useApp();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFr = language === 'fr';
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   }, [activeConversation?.messages, isSendingMessage]);
 
-  const handleFollowUp = async (question: string) => {
-    await sendMessage(question);
+  const handleFollowUp = (question: string) => {
+    sendMessage(question);
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3.25rem-4rem)] pb-28 max-w-4xl mx-auto px-3 sm:px-5 pt-3 font-sans">
-      {/* Conversation Top Action Bar */}
-      <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#E1E8F2] gap-2">
-        <div className="flex items-center gap-3">
+    <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[760px] flex-col px-5 pb-28 sm:px-8 md:pb-10">
+      <div className="flex items-center justify-between gap-4 border-b border-rule py-3">
+        <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             onClick={() => navigateTo('/home')}
-            className="w-9 h-9 rounded-xl bg-white border border-[#E1E8F2] text-slate-700 hover:text-[#1463F3] hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-2xs"
-            title="Return to main dashboard"
+            className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+            aria-label={isFr ? 'Retour à l’accueil' : 'Back to home'}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
-
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#1463F3] text-white flex items-center justify-center shrink-0 shadow-2xs">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-bold text-[#17233B] leading-tight truncate max-w-[180px] sm:max-w-md">
-                  {activeConversation?.title || 'My UB Guide Assistant'}
-                </h1>
-                <span className="hidden sm:inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Full Chat Mode</span>
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
-                <span>Google Gemma 4 • {activeConversation?.messages.length || 0} messages in thread</span>
-              </p>
-            </div>
-          </div>
+          <h1 className="min-w-0 truncate text-[18px] font-semibold text-ink">
+            {activeConversation?.title || (isFr ? 'Discussion' : 'Chat')}
+          </h1>
         </div>
 
-        {/* Top Actions */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
             onClick={() => navigateTo('/history')}
-            className="w-9 h-9 rounded-xl bg-white border border-[#E1E8F2] text-slate-600 hover:text-[#1463F3] hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
-            title="Conversation history"
+            className="flex h-11 w-11 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+            aria-label={isFr ? 'Historique des discussions' : 'Conversation history'}
           >
-            <History className="w-4.5 h-4.5" />
+            <History className="h-5 w-5" />
           </button>
 
           <button
             type="button"
             onClick={createNewConversation}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-[#1463F3] hover:bg-[#104fc2] text-white px-3 py-2 rounded-xl transition-all shadow-xs cursor-pointer"
+            className="flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-[14px] font-medium text-ink transition-colors hover:bg-raised"
           >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">New Chat</span>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">{isFr ? 'Nouveau' : 'New'}</span>
           </button>
 
           {activeConversation && (
             <button
               type="button"
               onClick={() => {
-                if (window.confirm('Delete this conversation?')) {
+                if (
+                  window.confirm(
+                    isFr ? 'Supprimer cette discussion ?' : 'Delete this conversation?'
+                  )
+                ) {
                   deleteConversation(activeConversation.id);
                   navigateTo('/home');
                 }
               }}
-              className="w-9 h-9 rounded-xl bg-white border border-[#E1E8F2] text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer"
-              title="Delete conversation"
+              className="flex h-11 w-11 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-negative"
+              aria-label={isFr ? 'Supprimer la discussion' : 'Delete conversation'}
             >
-              <Trash2 className="w-4.5 h-4.5" />
+              <Trash2 className="h-5 w-5" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Full Conversation Thread */}
-      <div className="flex-1 space-y-4 mb-6">
+      <div className="flex-1 py-5">
+        {(!activeConversation || activeConversation.messages.length === 0) && (
+          <div className="flex items-start gap-3">
+            <RobotAvatar size="md" />
+            <div className="rounded-[10px] bg-surface px-4 py-4">
+              <p className="text-[16px] leading-relaxed text-ink">
+                {isFr
+                  ? 'Posez votre question sur les programmes, les admissions, les frais ou les dates académiques.'
+                  : 'Ask about programmes, admissions, fees or academic dates.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {activeConversation?.messages.map((msg) => (
-          <ChatMessageItem
-            key={msg.id}
-            message={msg}
-            onSelectFollowUp={handleFollowUp}
-          />
+          <ChatMessageItem key={msg.id} message={msg} onSelectFollowUp={handleFollowUp} />
         ))}
 
         {isSendingMessage && (
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-full bg-[#EEF5FF] text-[#1463F3] border border-[#1463F3]/20 flex items-center justify-center animate-pulse shrink-0">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div className="bg-white border border-[#E1E8F2] rounded-2xl px-4 py-3 shadow-xs flex items-center gap-2">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#1463F3] animate-bounce" />
-                <span className="w-2 h-2 rounded-full bg-[#1463F3] animate-bounce [animation-delay:0.2s]" />
-                <span className="w-2 h-2 rounded-full bg-[#1463F3] animate-bounce [animation-delay:0.4s]" />
-              </div>
-              <span className="text-xs text-slate-500 font-medium">Consulting official university knowledge base...</span>
-            </div>
+          <div className="mb-5 flex items-center gap-3">
+            <RobotAvatar size="sm" />
+            <span className="flex items-center gap-2 text-[14px] text-muted">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+              {isFr
+                ? 'Consultation de la base de connaissances…'
+                : 'Checking the university knowledge base…'}
+            </span>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Sticky Full Chat Composer */}
-      <div className="sticky bottom-16 bg-[#F6F8FC] pt-2 pb-1">
+      <div className="sticky bottom-20 bg-ground pt-2 md:bottom-0">
         <ChatComposer
           onSendMessage={sendMessage}
           isSending={isSendingMessage}

@@ -1,0 +1,1759 @@
+{
+ "url": "http://127.0.0.1:4173/welcome",
+ "at": "2026-11-04T07:43:16.554Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.32,
+    0.24
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 5,
+    "videos": 1,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 1760,
+     "screens": 2,
+     "words": 189,
+     "img": 1,
+     "video": 1,
+     "canvas": 0,
+     "svg": 15,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 1,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 66,
+     "vw": 4.6,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 257,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "lines": 2,
+     "size": 66,
+     "font": "Instrument Sans Variable"
+    },
+    "headings": [
+     {
+      "text": "Your future. A clearer path.",
+      "words": 5,
+      "chars": 28,
+      "lines": 2,
+      "size": 66,
+      "vw": 4.6,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.055,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.37,
+      "top": 257,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Less figuring it out. More moving forward.",
+      "words": 7,
+      "chars": 42,
+      "lines": 2,
+      "size": 42,
+      "vw": 2.9,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 1.15,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.31,
+      "top": 930,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Your next chapter starts here.",
+      "words": 5,
+      "chars": 30,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.03,
+      "leading": 1.55,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.26,
+      "top": 1504,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 7,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans Variable",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      12,
+      14,
+      15,
+      16,
+      17,
+      19,
+      23,
+      28,
+      42,
+      66
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans Variable",
+      "size": 14,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.1
+     },
+     "measureChars": 53,
+     "max": {
+      "size": 66,
+      "vw": 4.6,
+      "font": "Instrument Sans Variable",
+      "text": "Your future."
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.1,
+     "smallText": 6
+    },
+    "eyebrows": [
+     {
+      "text": "University of Buea · Your student companion",
+      "above": "Your future. A clearer path.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 14,
+      "top": 212
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 1112
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 1215
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 1318
+     }
+    ],
+    "color": {
+     "bodyBg": "#f6f5f0",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.25,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f6f5f0",
+       "top": 0,
+       "hsl": {
+        "h": 50,
+        "s": 0.25,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#5e6b64",
+       "share": 0.68
+      },
+      {
+       "color": "#15211c",
+       "share": 0.28
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      },
+      {
+       "color": "#1f5a44",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#1f5a44",
+      "hsl": {
+       "h": 158,
+       "s": 0.49,
+       "l": 0.24
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 2,
+     "radius": 10,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Continue as guest",
+      "Create an account"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 5,
+     "hairlineSamples": [
+      "nav.welcome-topics 1100px",
+      "button.guide-step 1100px",
+      "button.guide-step 1100px",
+      "button.guide-step 1100px",
+      "footer.welcome-footer.shell-width 1100px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 99,
+     "squareMedia": 0,
+     "roundedMedia": 2,
+     "mediaRadius": 180,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.22
+     },
+     {
+      "type": "video",
+      "ratio": 0.22
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 88,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans variable"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 1760,
+    "margins": {
+     "left": 170,
+     "right": 170
+    },
+    "sections": [
+     {
+      "sel": "section.welcome-hero",
+      "tag": "section",
+      "top": 124,
+      "height": 632,
+      "words": 64,
+      "media": 2,
+      "middle": 131,
+      "heading": {
+       "text": "Your future.",
+       "size": 66,
+       "tag": "h1"
+      },
+      "left": 170,
+      "right": 170,
+      "textLeft": 170,
+      "textRight": 194,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.welcome-section",
+      "tag": "section",
+      "top": 842,
+      "height": 626,
+      "words": 78,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Less figuring it out. More moving forward.",
+       "size": 42,
+       "tag": "h2"
+      },
+      "left": 170,
+      "right": 170,
+      "textLeft": 170,
+      "textRight": 184,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div",
+      "tag": "div",
+      "top": 1468,
+      "height": 143,
+      "words": 20,
+      "media": 0,
+      "middle": 488,
+      "heading": {
+       "text": "Your next chapter starts here.",
+       "size": 28,
+       "tag": "h2"
+      },
+      "left": 206,
+      "right": 206,
+      "textLeft": 206,
+      "textRight": 249,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your future. A clearer path.",
+      "size": 66,
+      "top": 257,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 170,
+      "n": 4
+     },
+     {
+      "x": 278,
+      "n": 3
+     },
+     {
+      "x": 752,
+      "n": 3
+     },
+     {
+      "x": 206,
+      "n": 2
+     },
+     {
+      "x": 890,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 13,
+    "bodySize": 14,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0.07,
+    "voidBox": {
+     "x": 0,
+     "y": 120,
+     "w": 120,
+     "h": 780
+    }
+   },
+   "app": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "dark": false,
+    "ground": "#f6f5f0",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 170,
+     "right": 170
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 66,
+     "vw": 4.6,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 257,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 7,
+     "firstScreen": 2,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 7,
+     "radii": [
+      [
+       0,
+       5
+      ],
+      [
+       180,
+       1
+      ],
+      [
+       16,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 3,
+     "tabularShare": 0,
+     "kpiMax": 14
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.17,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      12,
+      14,
+      15,
+      16,
+      17,
+      19,
+      23,
+      28,
+      42,
+      66
+     ]
+    },
+    "title": {
+     "text": "Your future.\nA clearer path.",
+     "size": 66,
+     "top": 257
+    },
+    "colourShare": 0.006
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 2,
+   "filled": [
+    0.35,
+    0.3
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 5,
+    "videos": 1,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 1654,
+     "screens": 1.6,
+     "words": 189,
+     "img": 1,
+     "video": 1,
+     "canvas": 0,
+     "svg": 15,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 1,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 48,
+     "vw": 6.3,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 190,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "lines": 2,
+     "size": 48,
+     "font": "Instrument Sans Variable"
+    },
+    "headings": [
+     {
+      "text": "Your future. A clearer path.",
+      "words": 5,
+      "chars": 28,
+      "lines": 2,
+      "size": 48,
+      "vw": 6.3,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.055,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.45,
+      "top": 190,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Less figuring it out. More moving forward.",
+      "words": 7,
+      "chars": 42,
+      "lines": 2,
+      "size": 30.7,
+      "vw": 4,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 1.15,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 780,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Your next chapter starts here.",
+      "words": 5,
+      "chars": 30,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.03,
+      "leading": 1.55,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.48,
+      "top": 1398,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 7,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans Variable",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      19,
+      23,
+      28,
+      31,
+      48
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans Variable",
+      "size": 14,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.1
+     },
+     "measureChars": 41,
+     "max": {
+      "size": 48,
+      "vw": 6.3,
+      "font": "Instrument Sans Variable",
+      "text": "Your future."
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.1,
+     "smallText": 6
+    },
+    "eyebrows": [
+     {
+      "text": "University of Buea · Your student companion",
+      "above": "Your future. A clearer path.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 14,
+      "top": 144
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 948
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 1074
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 1200
+     }
+    ],
+    "color": {
+     "bodyBg": "#f6f5f0",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.25,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f6f5f0",
+       "top": 0,
+       "hsl": {
+        "h": 50,
+        "s": 0.25,
+        "l": 0.95
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#5e6b64",
+       "share": 0.68
+      },
+      {
+       "color": "#15211c",
+       "share": 0.28
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      },
+      {
+       "color": "#1f5a44",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#1f5a44",
+      "hsl": {
+       "h": 158,
+       "s": 0.49,
+       "l": 0.24
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 2,
+     "radius": 10,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Continue as guest",
+      "Create an account"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 5,
+     "hairlineSamples": [
+      "nav.welcome-topics 704px",
+      "button.guide-step 704px",
+      "button.guide-step 704px",
+      "button.guide-step 704px",
+      "footer.welcome-footer.shell-width 704px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 99,
+     "squareMedia": 0,
+     "roundedMedia": 2,
+     "mediaRadius": 180,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.15
+     },
+     {
+      "type": "video",
+      "ratio": 0.15
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 88,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans variable"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 1654,
+    "margins": {
+     "left": 32,
+     "right": 32
+    },
+    "sections": [
+     {
+      "sel": "section.welcome-hero",
+      "tag": "section",
+      "top": 124,
+      "height": 459,
+      "words": 64,
+      "media": 2,
+      "middle": 29,
+      "heading": {
+       "text": "Your future.",
+       "size": 48,
+       "tag": "h1"
+      },
+      "left": 32,
+      "right": 32,
+      "textLeft": 32,
+      "textRight": 56,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.welcome-section",
+      "tag": "section",
+      "top": 692,
+      "height": 669,
+      "words": 78,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Less figuring it out. More moving forward.",
+       "size": 31,
+       "tag": "h2"
+      },
+      "left": 32,
+      "right": 32,
+      "textLeft": 32,
+      "textRight": 57,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div",
+      "tag": "div",
+      "top": 1362,
+      "height": 143,
+      "words": 20,
+      "media": 0,
+      "middle": 92,
+      "heading": {
+       "text": "Your next chapter starts here.",
+       "size": 28,
+       "tag": "h2"
+      },
+      "left": 68,
+      "right": 68,
+      "textLeft": 68,
+      "textRight": 111,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your future. A clearer path.",
+      "size": 48,
+      "top": 190,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 32,
+      "n": 4
+     },
+     {
+      "x": 140,
+      "n": 3
+     },
+     {
+      "x": 416,
+      "n": 3
+     },
+     {
+      "x": 68,
+      "n": 2
+     },
+     {
+      "x": 386,
+      "n": 1
+     }
+    ],
+    "leftBlocks": 13,
+    "bodySize": 14,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "dark": false,
+    "ground": "#f6f5f0",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 32,
+     "right": 32
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 48,
+     "vw": 6.3,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 190,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 7,
+     "firstScreen": 3,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 7,
+     "radii": [
+      [
+       0,
+       5
+      ],
+      [
+       180,
+       1
+      ],
+      [
+       16,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 3,
+     "tabularShare": 0,
+     "kpiMax": 14
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.17,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      19,
+      23,
+      28,
+      31,
+      48
+     ]
+    },
+    "title": {
+     "text": "Your future.\nA clearer path.",
+     "size": 48,
+     "top": 190
+    },
+    "colourShare": 0.012
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 3,
+   "filled": [
+    0.56,
+    0.44,
+    0.47
+   ],
+   "motion": {
+    "elements": 5,
+    "css": 0,
+    "transitions": 0,
+    "scripted": 5,
+    "videos": 1,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 2154,
+     "screens": 2.6,
+     "words": 189,
+     "img": 1,
+     "video": 1,
+     "canvas": 0,
+     "svg": 15,
+     "sections": 3,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 1,
+     "videoCount": 1,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 44,
+     "vw": 11.4,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 144,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "h1": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "lines": 2,
+     "size": 44.5,
+     "font": "Instrument Sans Variable"
+    },
+    "headings": [
+     {
+      "text": "Your future. A clearer path.",
+      "words": 5,
+      "chars": 28,
+      "lines": 2,
+      "size": 44.5,
+      "vw": 11.4,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.055,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 144,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Less figuring it out. More moving forward.",
+      "words": 7,
+      "chars": 42,
+      "lines": 2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.04,
+      "leading": 1.15,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1087,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Your next chapter starts here.",
+      "words": 5,
+      "chars": 30,
+      "lines": 2,
+      "size": 27,
+      "vw": 6.9,
+      "font": "Instrument Sans Variable",
+      "weight": 500,
+      "tracking": -0.03,
+      "leading": 1.55,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.77,
+      "top": 1777,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 3,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 7,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Instrument Sans Variable",
+       "share": 1,
+       "mono": false
+      }
+     ],
+     "familyCount": 1,
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      20,
+      27,
+      32,
+      45
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Instrument Sans Variable",
+      "size": 14,
+      "leading": 1.55,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 5.1
+     },
+     "measureChars": 47,
+     "max": {
+      "size": 44.5,
+      "vw": 11.4,
+      "font": "Instrument Sans Variable",
+      "text": "Your future."
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0.1,
+     "smallText": 6
+    },
+    "eyebrows": [
+     {
+      "text": "University of Buea · Your student companion",
+      "above": "Your future. A clearer path.",
+      "upper": false,
+      "tracked": false,
+      "mono": false,
+      "pill": false,
+      "size": 14,
+      "top": 104
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 1276
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 1434
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 1592
+     }
+    ],
+    "color": {
+     "bodyBg": "#f6f5f0",
+     "bodyBgHsl": {
+      "h": 50,
+      "s": 0.25,
+      "l": 0.95
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#f6f5f0",
+       "top": 0,
+       "hsl": {
+        "h": 50,
+        "s": 0.25,
+        "l": 0.95
+       }
+      },
+      {
+       "color": "#e9ede5",
+       "top": 481,
+       "hsl": {
+        "h": 90,
+        "s": 0.18,
+        "l": 0.91
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#5e6b64",
+       "share": 0.68
+      },
+      {
+       "color": "#15211c",
+       "share": 0.28
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.03
+      },
+      {
+       "color": "#1f5a44",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#1f5a44",
+      "hsl": {
+       "h": 158,
+       "s": 0.49,
+       "l": 0.24
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 3,
+     "inHero": 2,
+     "radius": 10,
+     "height": 50,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Continue as guest",
+      "Create an account"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 0,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 5,
+     "hairlineSamples": [
+      "nav.welcome-topics 350px",
+      "button.guide-step 350px",
+      "button.guide-step 350px",
+      "button.guide-step 350px",
+      "footer.welcome-footer.shell-width 350px"
+     ],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 2,
+     "boxRadius": 99,
+     "squareMedia": 0,
+     "roundedMedia": 2,
+     "mediaRadius": 180,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.37
+     },
+     {
+      "type": "video",
+      "ratio": 0.37
+     }
+    ],
+    "nav": {
+     "links": 0,
+     "fixed": false,
+     "height": 76,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "instrument sans variable"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 2154,
+    "margins": {
+     "left": 20,
+     "right": 20
+    },
+    "sections": [
+     {
+      "sel": "section.welcome-hero",
+      "tag": "section",
+      "top": 92,
+      "height": 775,
+      "words": 64,
+      "media": 2,
+      "middle": 0,
+      "heading": {
+       "text": "Your future.",
+       "size": 44,
+       "tag": "h1"
+      },
+      "left": 20,
+      "right": 20,
+      "textLeft": 20,
+      "textRight": 40,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "nav.welcome-topics",
+      "tag": "nav",
+      "top": 867,
+      "height": 172,
+      "words": 9,
+      "media": 0,
+      "middle": 0,
+      "heading": null,
+      "left": 20,
+      "right": 148,
+      "textLeft": 20,
+      "textRight": 148,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section.welcome-section",
+      "tag": "section",
+      "top": 1039,
+      "height": 711,
+      "words": 78,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Less figuring it out. More moving forward.",
+       "size": 32,
+       "tag": "h2"
+      },
+      "left": 20,
+      "right": 20,
+      "textLeft": 20,
+      "textRight": 28,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "div",
+      "tag": "div",
+      "top": 1749,
+      "height": 257,
+      "words": 20,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Your next chapter starts here.",
+       "size": 27,
+       "tag": "h2"
+      },
+      "left": 44,
+      "right": 64,
+      "textLeft": 44,
+      "textRight": 64,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Your future. A clearer path.",
+      "size": 44,
+      "top": 144,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 64,
+      "n": 6
+     },
+     {
+      "x": 20,
+      "n": 5
+     },
+     {
+      "x": 44,
+      "n": 2
+     }
+    ],
+    "leftBlocks": 13,
+    "bodySize": 14,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "dark": false,
+    "ground": "#f6f5f0",
+    "sidebar": null,
+    "topbar": null,
+    "canvas": {
+     "left": 20,
+     "right": 20
+    },
+    "hero": {
+     "text": "Your future. A clearer path.",
+     "words": 5,
+     "chars": 28,
+     "lines": 2,
+     "size": 44,
+     "vw": 11.4,
+     "font": "Instrument Sans Variable",
+     "weight": 500,
+     "tracking": -0.05,
+     "leading": 1.06,
+     "top": 144,
+     "tag": "h1",
+     "kind": "heading",
+     "align": "left",
+     "position": "left"
+    },
+    "charts": 0,
+    "layout": {
+     "panels": 7,
+     "firstScreen": 1,
+     "ragged": [],
+     "voids": []
+    },
+    "tiles": 0,
+    "panels": {
+     "count": 7,
+     "radii": [
+      [
+       0,
+       5
+      ],
+      [
+       180,
+       1
+      ],
+      [
+       16,
+       1
+      ]
+     ],
+     "heavyBorders": 0,
+     "borderSamples": [],
+     "heavyShadows": 0,
+     "softShadows": 0,
+     "shadowSamples": [],
+     "glass": 0
+    },
+    "chips": {
+     "count": 0,
+     "hues": 0,
+     "samples": []
+    },
+    "numbers": {
+     "cells": 0,
+     "leftAligned": 0,
+     "figures": 3,
+     "tabularShare": 0,
+     "kpiMax": 14
+    },
+    "rows": null,
+    "chartHues": 0,
+    "placeholders": [],
+    "type": {
+     "under13": 0.17,
+     "tiny": 0,
+     "tinySamples": [],
+     "sizes": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      20,
+      27,
+      32,
+      44
+     ]
+    },
+    "title": {
+     "text": "Your future.\nA clearer path.",
+     "size": 44,
+     "top": 144
+    },
+    "colourShare": 0.025
+   },
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "WARN",
+   "id": "palette-cream",
+   "width": 1440,
+   "message": "Yellow-cream background (page background #f6f5f0, section #f6f5f0).",
+   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "below-fold",
+   "width": 1440,
+   "message": "Only 2 of 7 blocks start on the first 1440px screen.",
+   "fix": "Every block the brief names shows its header and first rows on the first desktop screen: size the headline block to its question, cap long lists with \"View all\", and put time-sensitive blocks before long tables."
+  },
+  {
+   "level": "WARN",
+   "id": "app-title-size",
+   "width": 1440,
+   "message": "The h1 is 66px (\"Your future.\nA clearer path.\").",
+   "fix": "An app screen is not a landing page: the title is 18-32px (20-24px on a phone).",
+   "alsoAt": [
+    768,
+    390
+   ]
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\desktop-fold.jpg",
+   "pages": [
+    "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\desktop-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\tablet-fold.jpg",
+   "pages": [
+    "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\mobile-fold.jpg",
+   "pages": [
+    "C:\\Users\\Luma Chrisparr\\Desktop\\my-ub-guide-app\\.taste-skill\\campus-production-welcome\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

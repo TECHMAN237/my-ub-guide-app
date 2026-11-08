@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 interface SuggestedQuestionsProps {
@@ -8,7 +7,7 @@ interface SuggestedQuestionsProps {
 }
 
 export const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({ onSelect, limit = 4 }) => {
-  const { userCategory, language, userProfile } = useApp();
+  const { userCategory, language } = useApp();
 
   const isFr = language === 'fr';
   const isEnrolled = userCategory === 'enrolled';
@@ -20,33 +19,33 @@ export const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({ onSelect
         'Quelle est la date limite de candidature ?',
         'Quelles sont les conditions d’admission ?',
         'Quels documents dois-je fournir pour postuler ?',
-        'Combien d’années dure la Licence en Informatique ?'
+        'Combien d’années dure la Licence en Informatique ?',
       ]
     : [
-        'What programs are offered?',
+        'What programmes are offered?',
         'How much are school fees?',
         'When is the application deadline?',
         'What are the admission requirements?',
         'What documents do I need to apply?',
-        'How long does a Computer Science degree take?'
+        'How long does a Computer Science degree take?',
       ];
 
   const enrolledQuestions = isFr
     ? [
-        `Combien de crédits puis-je inscrire ce semestre ?`,
+        'Combien de crédits puis-je inscrire ce semestre ?',
         'Quand est la date limite des frais de scolarité ?',
         'Comment enregistrer mes cours (Form A/B) ?',
         'Quelles sont les dates des examens du 1er semestre ?',
         'Que se passe-t-il si j’échoue à une matière ?',
-        'Quelles sont les règles des crédits supplémentaires ?'
+        'Quelles sont les règles des crédits supplémentaires ?',
       ]
     : [
-        `How many credits can I register for this semester?`,
+        'How many credits can I register for this semester?',
         'When is school fee payment due?',
         'How do I register my courses?',
         'What are the semester exam dates?',
         'What happens if I fail a course?',
-        'Are additional credits permitted, and under what conditions?'
+        'Are additional credits permitted, and under what conditions?',
       ];
 
   const questions = isEnrolled ? enrolledQuestions : prospectiveQuestions;
@@ -54,29 +53,18 @@ export const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({ onSelect
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-[#17233B]">
-          <Sparkles className="w-3.5 h-3.5 text-[#1463F3]" />
-          <span>{isFr ? 'Questions fréquentes' : 'Popular questions'}</span>
-        </div>
-        <span className="text-[11px] text-[#68758B]">
-          {isEnrolled ? (userProfile?.department || 'Personalized') : 'Explore'}
-        </span>
-      </div>
-
-      <div className="space-y-2">
+      <p className="mb-1 text-[14px] text-muted">
+        {isFr ? 'Questions fréquentes' : 'Common questions'}
+      </p>
+      <div className="flex flex-wrap gap-x-5">
         {displayQuestions.map((q, idx) => (
           <button
             key={idx}
+            type="button"
             onClick={() => onSelect(q)}
-            className="w-full text-left px-3.5 py-2.5 rounded-xl bg-white border border-[#E1E8F2] hover:border-blue-300 hover:bg-[#EEF5FF]/60 text-xs text-[#17233B] font-medium transition-all flex items-center justify-between group shadow-2xs"
+            className="min-h-[44px] max-w-full text-left text-[16px] font-medium text-accent underline-offset-2 transition-colors hover:underline"
           >
-            <span className="group-hover:text-[#1463F3] transition-colors leading-relaxed">
-              • {q}
-            </span>
-            <span className="text-[#68758B] group-hover:text-[#1463F3] text-xs transition-colors shrink-0 ml-2">
-              →
-            </span>
+            {q}
           </button>
         ))}
       </div>

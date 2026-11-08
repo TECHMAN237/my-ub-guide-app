@@ -1,8 +1,8 @@
-# My UB Guide
+# UB Compass
 
 **Your Journey at the University of Buea Starts Here.**
 
-My UB Guide is an AI-powered university orientation application designed to help prospective and enrolled students understand the University of Buea (UB), Cameroon. Its main experience is a conversational assistant that helps users find guidance about programs, admissions, school fees, academic procedures, and university life.
+UB Compass is an AI-powered university orientation application designed to help prospective and enrolled students understand the University of Buea (UB), Cameroon. Its main experience is a conversational assistant that helps users find guidance about programs, admissions, school fees, academic procedures, and university life.
 
 > **Project status:** MVP in development. Features, integrations, and deployment configuration should be verified against the current source code before being described as production-ready.
 
@@ -26,7 +26,7 @@ My UB Guide is an AI-powered university orientation application designed to help
 
 ## Project goals
 
-My UB Guide aims to:
+UB Compass aims to:
 
 - Make university information easier to understand and access.
 - Help prospective students explore programs and admission requirements.
@@ -68,7 +68,7 @@ Personalized answers should use relevant profile fields, such as faculty, depart
 
 The intended MVP experience includes:
 
-- A landing/welcome page introducing My UB Guide.
+- A landing/welcome page introducing UB Compass.
 - Sign-up, login, and profile onboarding, according to the current implementation.
 - Selection between prospective and enrolled student journeys.
 - A chatbot-first home page.
@@ -85,13 +85,13 @@ This list describes product goals. Check the current source code and deployment 
 
 ### Gemma requirement
 
-The intended primary text-generation model for the chatbot is **Google Gemma**.
+The intended primary text-generation model for the chatbot is **Google Gemma**, served through **OpenRouter**.
 
-The application must use a model identifier and inference endpoint that are actually supported by the configured provider. Do not silently substitute Gemini or another model for live chatbot text generation.
+The application must use a model identifier and inference endpoint that are actually supported by OpenRouter. Use an OpenRouter-style Gemma id such as `google/gemma-4-31b-it:free`. Do not silently substitute Gemini or another model for live chatbot text generation.
 
-The availability of Gemini credentials in Google AI Studio does not automatically mean that every Gemma model or every Google Cloud service is accessible through the same endpoint or credentials. Verify the model and endpoint configuration against the provider's current documentation.
+OpenRouter credentials do not automatically mean every model or every modality is accessible. Verify the configured model and endpoint against OpenRouter's current model catalogue.
 
-If the configured Gemma endpoint is unavailable, the app should report a useful error rather than pretending a request succeeded or silently changing model families.
+If the configured Gemma endpoint is unavailable, the app reports a useful error rather than pretending a request succeeded or silently changing model families. The client also refuses bare ids without a vendor prefix, such as `gemma-4-26b-a4b-it` from the old Google GenAI integration.
 
 ### Knowledge-base grounding
 
@@ -121,14 +121,13 @@ The intended voice experience allows a student to speak a question, review the t
 
 These capabilities may use supported services such as:
 
-- Google Cloud Speech-to-Text or another verified Google transcription capability.
-- Google Cloud Text-to-Speech.
-- Google Cloud Translation when translation is needed.
-- Browser-native speech recognition or speech synthesis as optional fallbacks where supported.
+- The browser Web Speech API for speech recognition.
+- The browser speech-synthesis engine for spoken answers.
+- OpenRouter chat completions for bilingual translation.
 
-These services are distinct. Translation does not perform speech transcription, and not every Gemini or Gemma endpoint supports raw audio. Verify the capabilities of the actual endpoint and browser environment.
+OpenRouter does not offer an audio-transcription endpoint, so the server's `/api/voice/transcribe` route returns a structured `503` with `fallbackMode: 'browser-web-speech'`; the client then uses browser speech recognition.
 
-Separate Google Cloud services may require separate setup, permissions, project configuration, or credentials. Do not assume that a Gemini API key automatically enables all Google Cloud services.
+Keep text chat usable when voice services are unavailable, and allow users to review and edit a transcript before submitting it.
 
 Voice requirements:
 
@@ -150,7 +149,7 @@ Voice requirements:
 
 ## Technology and architecture
 
-The exact stack must be confirmed from the repository's `package.json`, build configuration, and source files. The project has been developed around a web application workflow and may include React/TypeScript, a Google AI inference integration, and deployment on Vercel.
+The exact stack must be confirmed from the repository's `package.json`, build configuration, and source files. The project is a React 19 + TypeScript + Vite application with an Express development server, Vercel serverless functions under `api/`, Tailwind CSS v4, and OpenRouter for Gemma inference.
 
 Do not assume a dependency, backend, database, authentication provider, or API is configured unless it exists in the current codebase.
 
@@ -174,9 +173,8 @@ The commands below are typical for a Node.js web application. Confirm the actual
 
 - Git.
 - A supported Node.js version for the project.
-- The package manager used by the repository (npm, pnpm, or yarn).
-- Required AI provider credentials for live inference.
-- Additional Google Cloud configuration only if the selected voice or translation services require it.
+- The package manager used by the repository (npm, with the committed `package-lock.json`).
+- An OpenRouter API key for live inference.
 
 ### Install dependencies
 
@@ -184,13 +182,11 @@ The commands below are typical for a Node.js web application. Confirm the actual
 npm install
 ```
 
-If the repository uses `pnpm` or `yarn`, use its existing lockfile and the corresponding package manager instead.
-
 ### Configure environment variables
 
-1. Inspect the project's environment example and configuration code.
-2. Create a local `.env.local` or the environment file expected by the framework.
-3. Add only the variables actually required by the current implementation.
+1. Copy `.env.example` to `.env`.
+2. Set `OPENROUTER_API_KEY` to your OpenRouter key.
+3. Optionally override `OPENROUTER_MODEL` (default `google/gemma-4-31b-it:free`).
 4. Keep private credentials out of source control.
 
 Do not copy example variable names blindly. The real names must match the code.
@@ -225,12 +221,14 @@ Use the actual configuration names found in the project. Potential configuration
 
 | Configuration | Purpose |
 |---|---|
-| Gemma model identifier | Selects a verified, supported Gemma model |
-| AI provider credentials | Authenticates requests to the configured inference provider |
-| Google Cloud project/location | Used only by services that require them |
-| Speech-to-Text settings | Enables a configured transcription service |
-| Text-to-Speech settings | Enables a configured speech synthesis service |
-| Translation settings | Enables a configured translation service |
+| `OPENROUTER_API_KEY` | Authenticates server-side requests to OpenRouter (required) |
+| `OPENROUTER_MODEL` | Selects a verified OpenRouter Gemma model (default `google/gemma-4-31b-it:free`) |
+| `APP_URL` | Optional public URL sent in OpenRouter attribution headers |
+| `SPEECH_TO_TEXT_ENABLED` | Enables browser speech recognition |
+| `TEXT_TO_SPEECH_ENABLED` | Enables browser speech synthesis |
+| `TRANSLATION_ENABLED` | Enables bilingual translation through OpenRouter |
+
+Legacy names (`GEMMA_API_KEY`, `gemma_api_key`, `GEMINI_API_KEY`, `gemini_api_key`) are still read as lower-priority fallbacks, but new deployments should use `OPENROUTER_API_KEY`.
 
 Do not require unused variables. Do not store secret keys in variables exposed to browser bundles (for example, public-prefixed frontend variables). For services that require private credentials, use a secure server-side route or the provider's recommended authentication flow.
 
@@ -315,7 +313,7 @@ Do not claim production readiness until the actual deployment has been verified.
 
 ## Contributing
 
-When working on My UB Guide:
+When working on UB Compass:
 
 1. Inspect the existing implementation before changing it.
 2. Preserve working features and the current technology stack where practical.
@@ -330,4 +328,4 @@ When working on My UB Guide:
 
 ---
 
-**My UB Guide — helping prospective and enrolled students navigate the University of Buea with clearer, more accessible guidance.**
+**UB Compass — helping prospective and enrolled students navigate the University of Buea with clearer, more accessible guidance.**

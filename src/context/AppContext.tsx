@@ -14,12 +14,6 @@ import {
   ResourceDocument
 } from '../types';
 import {
-  INITIAL_PROGRAMS,
-  INITIAL_FEES,
-  INITIAL_CALENDAR_EVENTS,
-  INITIAL_RESOURCES
-} from '../data/mockData';
-import {
   getStoredProfile,
   saveStoredProfile,
   clearStoredProfile,
@@ -37,6 +31,14 @@ import {
   saveStoredChecklist,
   getStoredNotifications,
   saveStoredNotifications,
+  getStoredPrograms,
+  saveStoredPrograms,
+  getStoredFees,
+  saveStoredFees,
+  getStoredCalendarEvents,
+  saveStoredCalendarEvents,
+  getStoredResources,
+  saveStoredResources,
   resetAllDemoData
 } from '../services/storageService';
 import { aiService } from '../services/aiService';
@@ -132,10 +134,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [historyStack, setHistoryStack] = useState<string[]>([window.location.pathname || '/']);
 
   // Dynamic Domain Data
-  const [programs, setPrograms] = useState<Program[]>(() => INITIAL_PROGRAMS);
-  const [fees, setFees] = useState<FeeItem[]>(() => INITIAL_FEES);
-  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(() => INITIAL_CALENDAR_EVENTS);
-  const [resources, setResources] = useState<ResourceDocument[]>(() => INITIAL_RESOURCES);
+  const [programs, setPrograms] = useState<Program[]>(() => getStoredPrograms());
+  const [fees, setFees] = useState<FeeItem[]>(() => getStoredFees());
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(() => getStoredCalendarEvents());
+  const [resources, setResources] = useState<ResourceDocument[]>(() => getStoredResources());
 
   // App & Chat Data
   const [conversations, setConversations] = useState<Conversation[]>(() => getStoredConversations());
@@ -178,7 +180,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       window.history.pushState({}, '', route);
     }
     setCurrentRoute(route);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   const navigate = useCallback((route: string) => {
@@ -338,12 +340,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       conv = createNewConversation();
     }
 
-    const userMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      sender: 'user',
-      text: trimmed,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
+    const lastTurn = conv.messages[conv.messages.length - 1];
+    const isRetryOfLastTurn = lastTurn?.sender === 'user' && lastTurn.text.trim() === trimmed;
+
+    const userMsg: ChatMessage = isRetryOfLastTurn
+      ? lastTurn
+      : {
+          id: `msg-${Date.now()}`,
+          sender: 'user',
+          text: trimmed,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
 
     const updatedTitle = conv.messages.length === 0
       ? (trimmed.length > 32 ? trimmed.substring(0, 32) + '...' : trimmed)
@@ -353,7 +360,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...conv,
       title: updatedTitle,
       updatedAt: new Date().toISOString(),
-      messages: [...conv.messages, userMsg]
+      messages: isRetryOfLastTurn ? conv.messages : [...conv.messages, userMsg]
     };
 
     const updatedConversations = conversations.map(c => c.id === conv!.id ? convWithUserMsg : c);
@@ -542,44 +549,68 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setConversations([]);
     setActiveConversationId(null);
     setSavedItems([]);
-    setPrograms(INITIAL_PROGRAMS);
-    setFees(INITIAL_FEES);
-    setCalendarEvents(INITIAL_CALENDAR_EVENTS);
-    setResources(INITIAL_RESOURCES);
+    setPrograms(getStoredPrograms());
+    setFees(getStoredFees());
+    setCalendarEvents(getStoredCalendarEvents());
+    setResources(getStoredResources());
     setChecklist(getStoredChecklist());
     setNotifications(getStoredNotifications());
     showToast('Demo data reset to official defaults');
     navigateTo('/');
   }, [navigateTo, showToast]);
 
-  // Admin CRUD operations
+  // Admin CRUD operations (persisted so the demo survives a reload)
   const addProgram = useCallback((p: Program) => {
-    setPrograms(prev => [p, ...prev]);
+    setPrograms(prev => {
+      const next = [p, ...prev];
+      saveStoredPrograms(next);
+      return next;
+    });
     showToast(`Added program "${p.name}"`);
   }, [showToast]);
 
   const deleteProgram = useCallback((id: string) => {
-    setPrograms(prev => prev.filter(p => p.id !== id));
+    setPrograms(prev => {
+      const next = prev.filter(p => p.id !== id);
+      saveStoredPrograms(next);
+      return next;
+    });
     showToast('Program removed');
   }, [showToast]);
 
   const addFee = useCallback((f: FeeItem) => {
-    setFees(prev => [f, ...prev]);
+    setFees(prev => {
+      const next = [f, ...prev];
+      saveStoredFees(next);
+      return next;
+    });
     showToast(`Fee schedule added for ${f.programName}`);
   }, [showToast]);
 
   const deleteFee = useCallback((id: string) => {
-    setFees(prev => prev.filter(f => f.id !== id));
+    setFees(prev => {
+      const next = prev.filter(f => f.id !== id);
+      saveStoredFees(next);
+      return next;
+    });
     showToast('Fee schedule item removed');
   }, [showToast]);
 
   const addCalendarEvent = useCallback((e: CalendarEvent) => {
-    setCalendarEvents(prev => [e, ...prev]);
+    setCalendarEvents(prev => {
+      const next = [e, ...prev];
+      saveStoredCalendarEvents(next);
+      return next;
+    });
     showToast(`Added event "${e.title}"`);
   }, [showToast]);
 
   const deleteCalendarEvent = useCallback((id: string) => {
-    setCalendarEvents(prev => prev.filter(e => e.id !== id));
+    setCalendarEvents(prev => {
+      const next = prev.filter(e => e.id !== id);
+      saveStoredCalendarEvents(next);
+      return next;
+    });
     showToast('Calendar event removed');
   }, [showToast]);
 

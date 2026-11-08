@@ -1,6 +1,6 @@
-import React from 'react';
-import { Bot, Bell, Menu, Globe, ChevronLeft } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
+import React from "react";
+import { Globe, Menu, ChevronLeft, Bell } from "lucide-react";
+import { useApp } from "../../context/AppContext";
 
 interface AppHeaderProps {
   title?: string;
@@ -9,11 +9,22 @@ interface AppHeaderProps {
   onOpenMenu: () => void;
 }
 
+const CompassMark: React.FC<{ className?: string }> = ({
+  className = "w-6 h-6",
+}) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M12 2.25 14.35 9.65 21.75 12 14.35 14.35 12 21.75 9.65 14.35 2.25 12 9.65 9.65Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const AppHeader: React.FC<AppHeaderProps> = ({
   title,
   showBack = false,
   onBack,
-  onOpenMenu
+  onOpenMenu,
 }) => {
   const {
     currentRoute,
@@ -22,7 +33,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     unreadNotificationCount,
     language,
     setLanguage,
-    userCategory
   } = useApp();
 
   const handleBack = () => {
@@ -30,85 +40,119 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     else goBack();
   };
 
+  const isFr = language === "fr";
+
+  const links = [
+    { route: "/home", label: isFr ? "Accueil" : "Home" },
+    { route: "/chat", label: isFr ? "Discussion" : "Chat" },
+    { route: "/programs", label: isFr ? "Programmes" : "Programmes" },
+    { route: "/saved", label: isFr ? "Enregistrés" : "Saved" },
+  ];
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E1E8F2] px-4 h-14 flex items-center justify-between">
-      {/* Left side: Back button or App Brand */}
-      <div className="flex items-center gap-2.5">
-        {showBack ? (
-          <button
-            type="button"
-            onClick={handleBack}
-            className="w-9 h-9 -ml-1 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors"
-            aria-label="Go back"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-        ) : null}
-
-        {title ? (
-          <h1 className="text-sm sm:text-base font-semibold text-[#17233B] truncate max-w-[200px] sm:max-w-xs">
-            {title}
-          </h1>
-        ) : (
-          <button
-            type="button"
-            onClick={() => navigateTo('/home')}
-            className="flex items-center gap-2 text-left group"
-          >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#102A56] to-[#1463F3] flex items-center justify-center text-white shadow-xs shrink-0">
-              <Bot className="w-4 h-4" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-[#17233B] group-hover:text-[#1463F3] transition-colors leading-tight">
-                  My UB Guide
+    <header className="app-header sticky top-0 z-40 bg-ground border-b border-rule">
+      <a className="skip-link" href="#main-content">
+        {isFr ? "Aller au contenu" : "Skip to content"}
+      </a>
+      <div className="shell-width mx-auto h-20 flex items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 min-w-0">
+          {showBack ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="w-11 h-11 -ml-2 rounded-[10px] flex items-center justify-center text-ink hover:bg-raised transition-colors"
+              aria-label="Go back"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigateTo("/home")}
+              className="flex items-center gap-2.5 min-w-0 group"
+              aria-label="UB Compass home"
+            >
+              <CompassMark className="w-6 h-6 text-accent shrink-0 transition-transform group-hover:rotate-45" />
+              <span className="brand-copy text-left">
+                <span className="block text-[18px] font-semibold text-ink leading-none whitespace-nowrap">
+                  UB Compass
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Assistant Online" />
-              </div>
-              <p className="text-[10px] text-slate-400 font-medium leading-tight">
-                {userCategory === 'enrolled' ? 'Enrolled Student' : 'University Guide'}
-              </p>
-            </div>
-          </button>
-        )}
-      </div>
-
-      {/* Right side: Language, Notifications, Menu */}
-      <div className="flex items-center gap-1">
-        {/* Language switch button */}
-        <button
-          type="button"
-          onClick={() => setLanguage(language === 'en' ? 'fr' : 'en')}
-          className="px-2 py-1 text-xs font-semibold text-slate-600 hover:text-[#1463F3] hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1"
-          title="Switch language (EN/FR)"
-        >
-          <Globe className="w-3.5 h-3.5" />
-          <span className="uppercase">{language}</span>
-        </button>
-
-        {/* Notifications Bell */}
-        <button
-          type="button"
-          onClick={() => navigateTo('/notifications')}
-          className="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:text-[#1463F3] hover:bg-slate-50 transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="w-4 h-4" />
-          {unreadNotificationCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white" />
+                <span className="brand-context">
+                  {isFr ? "Université de Buea" : "University of Buea"}
+                </span>
+              </span>
+            </button>
           )}
-        </button>
 
-        {/* Menu Toggle */}
-        <button
-          type="button"
-          onClick={onOpenMenu}
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:text-[#1463F3] hover:bg-slate-50 transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+          {title && (
+            <span className="text-[14px] text-muted truncate border-l border-rule pl-3 ml-1">
+              {title}
+            </span>
+          )}
+        </div>
+
+        <nav aria-label="Primary" className="hidden md:flex items-center gap-1">
+          {links.map((link) => {
+            const active =
+              currentRoute === link.route ||
+              (link.route !== "/home" && currentRoute.startsWith(link.route));
+            return (
+              <button
+                key={link.route}
+                type="button"
+                onClick={() => navigateTo(link.route)}
+                aria-current={active ? "page" : undefined}
+                className={`h-11 px-3 rounded-[10px] text-[14px] transition-colors ${
+                  active
+                    ? "bg-raised text-ink font-semibold"
+                    : "text-muted font-medium hover:text-ink hover:bg-raised"
+                }`}
+              >
+                {link.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => setLanguage(isFr ? "en" : "fr")}
+            className="h-11 px-2.5 rounded-[10px] text-[14px] font-medium text-muted hover:text-ink hover:bg-raised transition-colors flex items-center gap-1.5"
+            title={isFr ? "Passer en anglais" : "Switch to French"}
+            aria-label={isFr ? "Passer en anglais" : "Switch to French"}
+          >
+            <Globe className="hidden sm:block w-4 h-4" />
+            <span>{isFr ? "FR" : "EN"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigateTo("/notifications")}
+            className="relative hidden sm:flex w-11 h-11 rounded-[10px] items-center justify-center text-muted hover:text-ink hover:bg-raised transition-colors"
+            aria-label={isFr ? "Notifications" : "Notifications"}
+          >
+            <Bell className="w-[18px] h-[18px]" />
+            {unreadNotificationCount > 0 && (
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-negative ring-2 ring-ground" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenMenu}
+            className="h-11 px-3 rounded-[10px] flex items-center gap-2 text-muted hover:text-ink hover:bg-raised transition-colors"
+            aria-label={isFr ? "Ouvrir le menu" : "Open menu"}
+          >
+            <Menu className="w-5 h-5" />
+            <span className="hidden sm:inline text-[14px] font-medium">
+              {isFr ? "Menu" : "Menu"}
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   );
 };
+
+export { CompassMark };

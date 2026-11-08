@@ -2,7 +2,7 @@ import { Faculty, Department, Program, FeeItem, CalendarEvent, ResourceDocument,
 
 export const INSTITUTION_INFO = {
   name: 'Cameroon University Institute',
-  shortName: 'My UB Guide',
+  shortName: 'UB Compass',
   academicYear: '2025/2026',
   currentSemester: 'First Semester',
   description: 'A premier bilingual higher education institution dedicated to academic excellence, innovation, and leadership.',

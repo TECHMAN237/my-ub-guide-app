@@ -1,8 +1,8 @@
 import { UserProfile, ChatMessage } from '../types';
-import { gemmaChatService, GemmaChatResponse } from './gemmaChatService';
+import { openRouterChatService, UniversityChatResponse } from './openRouterChatService';
 import { AI_CONFIG } from '../config/aiConfig';
 
-export type AIResponse = GemmaChatResponse;
+export type AIResponse = UniversityChatResponse;
 
 export class AIService {
   private static instance: AIService;
@@ -47,12 +47,12 @@ export class AIService {
     if (this.simulateFailure) {
       throw new Error(
         language === 'fr'
-          ? "Impossible de contacter le service IA. Erreur de connexion au modèle Gemma. Veuillez réessayer ou vérifier la configuration."
-          : "Unable to contact the AI service. Connection error to Google Gemma model. Please verify your connection and try again."
+          ? "Impossible de contacter le service IA. Erreur de connexion au modèle IA via OpenRouter. Veuillez réessayer ou vérifier la configuration."
+          : "Unable to contact the AI service. Connection error to the AI model on OpenRouter. Please verify your connection and try again."
       );
     }
 
-    return gemmaChatService.generateUniversityAnswer({
+    return openRouterChatService.generateUniversityAnswer({
       message,
       history,
       userProfile,

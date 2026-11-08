@@ -1,0 +1,16 @@
+{
+  "playing": {
+    "time": 2.6857,
+    "paused": false,
+    "width": 720
+  },
+  "checks": [
+    "MP4 decodes at 720px and advances",
+    "Pause holds current frame",
+    "Play resumes",
+    "Offscreen pauses",
+    "Onscreen resumes",
+    "Scroll reveal finishes visible",
+    "No runtime exceptions"
+  ]
+}

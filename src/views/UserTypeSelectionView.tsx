@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, ArrowLeft, BookOpen, GraduationCap } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const UserTypeSelectionView: React.FC = () => {
@@ -10,90 +10,56 @@ export const UserTypeSelectionView: React.FC = () => {
     navigateTo('/setup/profile', { category });
   };
 
+  const options = [
+    {
+      id: 'prospective' as const,
+      title: 'I am applying',
+      description:
+        'Programmes, entry requirements, school fees and application steps for a place at the University of Buea.',
+    },
+    {
+      id: 'enrolled' as const,
+      title: 'I am enrolled',
+      description:
+        'Course registration, credit limits, examinations and the rules that apply to your level.',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F6F8FC] flex flex-col justify-between p-6 max-w-md mx-auto">
-      <div>
-        <div className="flex items-center justify-between pt-2 mb-6">
-          <button
-            type="button"
-            onClick={() => navigateTo('/')}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-200/60 transition-colors"
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-
-          <div className="flex items-center gap-1.5">
-            <span className="w-6 h-1.5 rounded-full bg-[#1463F3]" />
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-          </div>
-
-          <div className="w-9" />
-        </div>
-
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#17233B] tracking-tight mb-2">
-            Who are you?
-          </h1>
-          <p className="text-sm text-[#68758B] leading-relaxed">
-            Personalize your experience to get the most relevant answers and tailored guidance.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <button
-            type="button"
-            onClick={() => handleSelect('prospective')}
-            className="w-full bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] rounded-2xl p-5 text-left transition-all shadow-xs hover:shadow-md flex items-center gap-4 group cursor-pointer"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#1463F3] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <BookOpen className="w-7 h-7" />
-            </div>
-
-            <div className="flex-1">
-              <h2 className="text-base font-bold text-[#17233B] group-hover:text-[#1463F3] transition-colors mb-1">
-                I'm not yet enrolled
-              </h2>
-              <p className="text-xs text-[#68758B] leading-normal">
-                I want to know about programs, admission, school fees, degree types, and more.
-              </p>
-            </div>
-
-            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#1463F3] group-hover:translate-x-0.5 transition-all shrink-0" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSelect('enrolled')}
-            className="w-full bg-white hover:bg-[#EEF5FF] border border-[#E1E8F2] hover:border-[#1463F3] rounded-2xl p-5 text-left transition-all shadow-xs hover:shadow-md flex items-center gap-4 group cursor-pointer"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-7 h-7" />
-            </div>
-
-            <div className="flex-1">
-              <h2 className="text-base font-bold text-[#17233B] group-hover:text-[#1463F3] transition-colors mb-1">
-                I'm already enrolled
-              </h2>
-              <p className="text-xs text-[#68758B] leading-normal">
-                I want help with courses, registration, credit limits, exams, department info, and more.
-              </p>
-            </div>
-
-            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#1463F3] group-hover:translate-x-0.5 transition-all shrink-0" />
-          </button>
-        </div>
-      </div>
-
-      <div className="py-6 text-center">
+    <div className="flex min-h-screen flex-col justify-center bg-ground px-5 py-10">
+      <div className="mx-auto w-full max-w-[560px]">
         <button
           type="button"
-          onClick={() => handleSelect('prospective')}
-          className="text-xs font-medium text-[#1463F3] hover:underline"
+          onClick={() => navigateTo('/welcome')}
+          className="-ml-2 mb-6 flex h-11 w-11 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+          aria-label="Back"
         >
-          Not sure? You can change this later in settings
+          <ArrowLeft className="h-5 w-5" />
         </button>
+
+        <h1 className="page-title text-ink">Where are you now?</h1>
+        <p className="page-lede mt-1">
+          This sets the guidance you see. You can change it later in the menu.
+        </p>
+
+        <div className="mt-6 space-y-3">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => handleSelect(option.id)}
+              className="flex w-full items-start justify-between gap-4 rounded-[10px] bg-surface p-5 text-left transition-colors hover:bg-raised"
+            >
+              <span>
+                <span className="block text-[18px] font-semibold text-ink">{option.title}</span>
+                <span className="mt-1 block text-[14px] leading-relaxed text-muted">
+                  {option.description}
+                </span>
+              </span>
+              <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

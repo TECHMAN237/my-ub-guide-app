@@ -1,8 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
-
-const getSecretApiKey = (): string | undefined => {
-  return process.env.gemma_api_key || process.env.GEMMA_API_KEY || process.env.GEMINI_API_KEY;
-};
+import {
+  OPENROUTER_TRANSLATION_MODEL,
+  chatCompletion,
+  getErrorMessage,
+  getOpenRouterApiKey
+} from '../src/lib/ai/openRouter';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -23,20 +24,13 @@ export default async function handler(req: any, res: any) {
       return;
     }
 
-    const currentKey = getSecretApiKey();
-    if (currentKey) {
-      try {
-        const client = new GoogleGenAI({
-          apiKey: currentKey,
-          httpOptions: {
-            headers: {
-              'User-Agent': 'aistudio-build'
-            }
-          }
-        });
+    if (!getOpenRouterApiKey()) {
+      res.status(200).json({ translatedText: text, detectedSourceLanguage: sourceLanguage || 'auto' });
+      return;
+    }
 
-        const langTarget = targetLanguage === 'fr' ? 'French' : 'English';
-        const prompt = `You are the official translator for University of Buea orientation portal. Translate the following text into ${langTarget}.
+    const langTarget = targetLanguage === 'fr' ? 'French' : 'English';
+    const prompt = `You are the official translator for the University of Buea orientation portal. Translate the following text into ${langTarget}.
 RULES:
 1. Strictly preserve all official university terms, degree titles (e.g., "BSc Software Engineering", "Master of Science"), course codes, statute references (e.g. "Statute 4.2"), and tuition amounts with currency (e.g., "290,000 FCFA").
 2. Output ONLY the translated text with natural grammar and tone, without commentary or quotation marks.
@@ -44,29 +38,28 @@ RULES:
 Text to translate:
 ${text}`;
 
-        const response = await client.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt
-        });
+    try {
+      const result = await chatCompletion({
+        model: OPENROUTER_TRANSLATION_MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        maxTokens: 1500
+      });
 
-        const translatedText = response.text?.trim();
-        if (translatedText) {
-          res.status(200).json({
-            translatedText,
-            detectedSourceLanguage: sourceLanguage || 'auto'
-          });
-          return;
-        }
-      } catch (err: any) {
-        console.warn('AI translation API warning:', err.message);
-      }
+      res.status(200).json({
+        translatedText: result.text,
+        detectedSourceLanguage: sourceLanguage || 'auto'
+      });
+      return;
+    } catch (err: unknown) {
+      console.warn('OpenRouter translation warning:', getErrorMessage(err));
     }
 
     res.status(200).json({
       translatedText: text,
       detectedSourceLanguage: sourceLanguage || 'auto'
     });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message || 'Translation error' });
+  } catch (error: unknown) {
+    res.status(500).json({ error: getErrorMessage(error) || 'Translation error' });
   }
 }

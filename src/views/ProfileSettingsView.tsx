@@ -1,20 +1,5 @@
 import React, { useState } from 'react';
-import {
-  User,
-  History,
-  Bookmark,
-  Bell,
-  Globe,
-  HelpCircle,
-  Info,
-  LogOut,
-  ChevronRight,
-  Database,
-  Edit3,
-  Check,
-  Shield,
-  FileText
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, LogOut } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const ProfileSettingsView: React.FC = () => {
@@ -26,8 +11,9 @@ export const ProfileSettingsView: React.FC = () => {
     language,
     setLanguage,
     navigateTo,
+    goBack,
     switchCategory,
-    unreadNotificationCount
+    unreadNotificationCount,
   } = useApp();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -46,73 +32,135 @@ export const ProfileSettingsView: React.FC = () => {
       email: editEmail,
       faculty: editFaculty,
       department: editDept,
-      level: editLevel
+      level: editLevel,
     });
     setIsEditing(false);
   };
 
+  const links = [
+    { label: 'Saved answers and items', route: '/saved' },
+    { label: 'Chat history', route: '/history' },
+    {
+      label: 'Notifications',
+      route: '/notifications',
+      badge: unreadNotificationCount > 0 ? String(unreadNotificationCount) : undefined,
+    },
+    { label: 'Help', route: '/help' },
+    { label: 'About UB Compass', route: '/about' },
+    { label: 'Privacy', route: '/privacy' },
+    { label: 'Demo content manager', route: '/admin' },
+  ];
+
+  const labelClass = 'mb-1 block text-[14px] font-medium text-ink';
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-4 pb-28">
-      {/* Profile Header Avatar & Identity (Screen 14) */}
-      <div className="bg-white border border-[#E1E8F2] rounded-3xl p-6 text-center shadow-2xs mb-5">
-        <div className="w-18 h-18 rounded-full bg-gradient-to-tr from-[#102A56] to-[#1463F3] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-3 shadow-md shadow-blue-500/20">
-          {userProfile?.name?.charAt(0) || 'U'}
-        </div>
-
-        <h1 className="text-lg font-bold text-[#17233B]">
-          {userProfile?.name || 'Ferdinand Tanyi'}
-        </h1>
-        <p className="text-xs text-slate-500 mt-0.5">
-          {isEnrolled
-            ? `Enrolled Student • ${userProfile?.level || 'Level 100'} • ${userProfile?.department || 'Computer Science'}`
-            : `Prospective Student • Interested in ${userProfile?.interestedStudyLevel || 'Undergraduate'} Programs`}
-        </p>
-
-        {/* Category Switch Badge Button */}
-        <div className="mt-3 inline-flex items-center gap-2 bg-[#F6F8FC] border border-[#E1E8F2] px-3 py-1 rounded-full text-xs">
-          <span className="text-slate-600 font-medium">Category:</span>
-          <button
-            type="button"
-            onClick={() => switchCategory(isEnrolled ? 'prospective' : 'enrolled')}
-            className="font-bold text-[#1463F3] hover:underline cursor-pointer"
-          >
-            {isEnrolled ? 'Enrolled Student' : 'Prospective Student'} (Switch)
-          </button>
+    <div className="mx-auto w-full max-w-[720px] px-5 pb-28 pt-4 sm:px-8 md:pb-16">
+      <div className="flex items-start gap-2">
+        <button
+          type="button"
+          onClick={goBack}
+          className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] text-muted transition-colors hover:bg-raised hover:text-ink"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <div className="min-w-0 pt-1">
+          <h1 className="page-title text-ink">Profile</h1>
+          <p className="page-lede mt-1">Your details and preferences.</p>
         </div>
       </div>
 
-      {/* Inline Edit Profile Form (if toggled) */}
+      <section className="mt-8 border-t border-rule pt-5">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          <div className="min-w-0">
+            <p className="text-[18px] font-semibold text-ink">
+              {userProfile?.name || 'Guest student'}
+            </p>
+            <p className="mt-0.5 text-[14px] text-muted">{userProfile?.email || 'Not signed in'}</p>
+            <p className="mt-2 text-[16px] text-ink">
+              {isEnrolled
+                ? `${userProfile?.level || 'Level 100'} · ${userProfile?.department || 'Computer Science'}`
+                : `Applying for ${userProfile?.interestedStudyLevel || 'undergraduate'} study`}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsEditing(!isEditing)}
+            className="btn btn-secondary btn-sm"
+            aria-expanded={isEditing}
+          >
+            {isEditing ? 'Close' : 'Edit details'}
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-muted">
+          <span>{isEnrolled ? 'Enrolled student' : 'Prospective student'}</span>
+          <button
+            type="button"
+            onClick={() => switchCategory(isEnrolled ? 'prospective' : 'enrolled')}
+            className="min-h-[36px] font-medium text-accent underline-offset-2 hover:underline"
+          >
+            Switch to {isEnrolled ? 'prospective' : 'enrolled'}
+          </button>
+        </div>
+      </section>
+
       {isEditing && (
-        <form onSubmit={handleSaveProfile} className="bg-white border border-[#1463F3]/40 rounded-3xl p-5 mb-5 shadow-xs space-y-3">
-          <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Edit Information</h2>
+        <form onSubmit={handleSaveProfile} className="mt-6 space-y-4">
           <div>
-            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Full Name</label>
+            <label htmlFor="profile-name" className={labelClass}>
+              Full name
+            </label>
             <input
+              id="profile-name"
               type="text"
               required
+              autoComplete="name"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full bg-[#F6F8FC] border border-[#E1E8F2] rounded-xl px-3 py-2 text-xs focus:outline-hidden focus:border-[#1463F3]"
+              className="field"
             />
           </div>
+
           <div>
-            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Email</label>
+            <label htmlFor="profile-email" className={labelClass}>
+              Email
+            </label>
             <input
+              id="profile-email"
               type="email"
               required
+              autoComplete="email"
               value={editEmail}
               onChange={(e) => setEditEmail(e.target.value)}
-              className="w-full bg-[#F6F8FC] border border-[#E1E8F2] rounded-xl px-3 py-2 text-xs focus:outline-hidden focus:border-[#1463F3]"
+              className="field"
             />
           </div>
+
+          <div>
+            <label htmlFor="profile-faculty" className={labelClass}>
+              Faculty
+            </label>
+            <input
+              id="profile-faculty"
+              type="text"
+              value={editFaculty}
+              onChange={(e) => setEditFaculty(e.target.value)}
+              className="field"
+            />
+          </div>
+
           {isEnrolled && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Academic Level</label>
+                <label htmlFor="profile-level" className={labelClass}>
+                  Academic level
+                </label>
                 <select
+                  id="profile-level"
                   value={editLevel}
                   onChange={(e) => setEditLevel(e.target.value)}
-                  className="w-full bg-[#F6F8FC] border border-[#E1E8F2] rounded-xl px-2 py-2 text-xs focus:outline-hidden"
+                  className="field"
                 >
                   <option value="Level 100">Level 100</option>
                   <option value="Level 200">Level 200</option>
@@ -122,28 +170,28 @@ export const ProfileSettingsView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Department</label>
+                <label htmlFor="profile-department" className={labelClass}>
+                  Department
+                </label>
                 <input
+                  id="profile-department"
                   type="text"
                   value={editDept}
                   onChange={(e) => setEditDept(e.target.value)}
-                  className="w-full bg-[#F6F8FC] border border-[#E1E8F2] rounded-xl px-3 py-2 text-xs focus:outline-hidden"
+                  className="field"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex gap-2 pt-2">
-            <button
-              type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#1463F3] text-white font-semibold text-xs cursor-pointer"
-            >
-              Save Changes
+          <div className="flex gap-2 pt-1">
+            <button type="submit" className="btn btn-primary">
+              Save changes
             </button>
             <button
               type="button"
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-semibold text-xs cursor-pointer"
+              className="btn btn-secondary"
             >
               Cancel
             </button>
@@ -151,161 +199,73 @@ export const ProfileSettingsView: React.FC = () => {
         </form>
       )}
 
-      {/* Menu Action List (Matching Screen 14 in visual reference) */}
-      <div className="bg-white border border-[#E1E8F2] rounded-3xl overflow-hidden shadow-2xs divide-y divide-slate-100 mb-5">
-        <button
-          type="button"
-          onClick={() => setIsEditing(!isEditing)}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <User className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">My Information</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigateTo('/history')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <History className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">Chat History</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigateTo('/saved')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <Bookmark className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">Saved Answers & Items</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigateTo('/notifications')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <Bell className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">Notifications</span>
-          </div>
-          <div className="flex items-center gap-2">
-            {unreadNotificationCount > 0 && (
-              <span className="text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.2 rounded-full">
-                {unreadNotificationCount}
+      <section className="mt-8">
+        <h2 className="text-[18px] font-semibold text-ink">Account</h2>
+        <div className="mt-1">
+          {links.map((link) => (
+            <button
+              key={link.route}
+              type="button"
+              onClick={() => navigateTo(link.route)}
+              className="row-link w-full text-left"
+            >
+              <span className="text-[16px] text-ink">{link.label}</span>
+              <span className="flex shrink-0 items-center gap-2">
+                {link.badge && <span className="tnum text-[14px] text-accent">{link.badge}</span>}
+                <ArrowRight className="h-4 w-4 text-muted" aria-hidden="true" />
               </span>
-            )}
-            <ChevronRight className="w-4 h-4 text-slate-400" />
-          </div>
-        </button>
-
-        {/* Language switch */}
-        <div className="w-full flex items-center justify-between p-4 text-left border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <Globe className="w-5 h-5 text-slate-500" />
-            <div>
-              <span className="text-xs font-semibold text-[#17233B] block">Interface Language</span>
-              <span className="text-[10px] text-slate-400">English / Français</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setLanguage(language === 'en' ? 'fr' : 'en')}
-            className="text-xs font-semibold text-[#1463F3] bg-[#EEF5FF] px-2.5 py-1 rounded-lg cursor-pointer hover:bg-blue-100"
-          >
-            {language === 'en' ? 'English (EN)' : 'Français (FR)'}
-          </button>
+            </button>
+          ))}
         </div>
+      </section>
 
-        {/* AI Model & Voice Engine Information (Gemma Mandate) */}
-        <div className="p-4 bg-[#F8FAFC] border-b border-slate-100">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-bold text-[#102A56] uppercase tracking-wider">AI Model & Voice Engine</span>
-            </div>
-            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              Active
-            </span>
-          </div>
-          <div className="space-y-1 text-xs">
-            <div className="flex justify-between py-0.5">
-              <span className="text-slate-500">Generative Model:</span>
-              <span className="font-semibold text-slate-800">Google Gemma 4 (gemma-4-26b-a4b-it)</span>
-            </div>
-            <div className="flex justify-between py-0.5">
-              <span className="text-slate-500">Inference Provider:</span>
-              <span className="font-semibold text-slate-800">google-genai</span>
-            </div>
-            <div className="flex justify-between py-0.5">
-              <span className="text-slate-500">Voice Transcription:</span>
-              <span className="font-semibold text-slate-800">Google Speech-to-Text</span>
-            </div>
-            <div className="flex justify-between py-0.5">
-              <span className="text-slate-500">Voice Synthesis:</span>
-              <span className="font-semibold text-slate-800">Bilingual TTS (EN & FR)</span>
-            </div>
-          </div>
+      <section className="mt-8">
+        <h2 className="text-[18px] font-semibold text-ink">Language</h2>
+        <div className="mt-2 flex gap-2">
+          {(['en', 'fr'] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setLanguage(value)}
+              aria-pressed={language === value}
+              className="chip"
+            >
+              {value === 'en' ? 'English' : 'Français'}
+            </button>
+          ))}
         </div>
+      </section>
 
-        <button
-          type="button"
-          onClick={() => navigateTo('/admin')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <Database className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">Demo Content Manager</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
+      <section className="mt-8 border-t border-rule pt-5">
+        <h2 className="text-[18px] font-semibold text-ink">How answers are produced</h2>
+        <dl className="mt-2 text-[14px]">
+          {[
+            ['Model', 'OpenRouter free tier'],
+            ['Voice input', 'Browser speech recognition'],
+            ['Read aloud', 'Bilingual text to speech'],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="flex flex-wrap justify-between gap-x-4 border-b border-rule py-2"
+            >
+              <dt className="text-muted">{label}</dt>
+              <dd className="text-ink">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
 
-        <button
-          type="button"
-          onClick={() => navigateTo('/help')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <HelpCircle className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">Help & Support</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigateTo('/about')}
-          className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <Info className="w-5 h-5 text-slate-500" />
-            <span className="text-xs font-semibold text-[#17233B]">About My UB Guide</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-slate-400" />
-        </button>
-      </div>
-
-      {/* Log out / Switch User */}
       <button
         type="button"
         onClick={() => {
-          if (window.confirm('Sign out and return to user selection?')) {
+          if (window.confirm('Sign out and return to the welcome screen?')) {
             clearUserData();
           }
         }}
-        className="w-full p-3.5 rounded-2xl bg-white border border-red-200 text-red-600 hover:bg-red-50 font-semibold text-xs flex items-center justify-center gap-2 shadow-2xs transition-colors cursor-pointer"
+        className="mt-8 inline-flex min-h-[44px] items-center gap-2 text-[14px] font-medium text-negative underline-offset-2 hover:underline"
       >
-        <LogOut className="w-4 h-4" />
-        <span>Log Out</span>
+        <LogOut className="h-4 w-4" aria-hidden="true" />
+        Sign out
       </button>
     </div>
   );

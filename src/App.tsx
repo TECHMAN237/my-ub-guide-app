@@ -32,22 +32,25 @@ const MainLayout: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Full-screen onboarding / auth views where top app header & bottom nav are hidden
+  const isAuthenticated = Boolean(userProfile || isLoggedIn);
   const isFullScreenView =
-    currentRoute === '/' ||
+    (!isAuthenticated &&
+      (currentRoute === '/' ||
+        currentRoute === '/auth/login' ||
+        currentRoute === '/auth/signup')) ||
     currentRoute === '/welcome' ||
-    currentRoute === '/auth/login' ||
-    currentRoute === '/auth/signup' ||
+    currentRoute === '/landing' ||
     currentRoute === '/setup/user-type' ||
     currentRoute === '/setup/profile';
 
   const renderCurrentView = () => {
     switch (currentRoute) {
       case '/':
-        // Default entry page: LoginView for unauthenticated visitors, HomeChatView for authenticated users
+        // Default entry page: landing page for visitors, home for signed-in users
         if (userProfile || isLoggedIn) {
           return <HomeChatView />;
         }
-        return <LoginView />;
+        return <SplashView />;
       case '/auth/login':
         if (userProfile || isLoggedIn) {
           return <HomeChatView />;
@@ -112,12 +115,12 @@ const MainLayout: React.FC = () => {
         if (userProfile || isLoggedIn) {
           return <HomeChatView />;
         }
-        return <LoginView />;
+        return <SplashView />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FC] text-[#17233B] flex flex-col antialiased selection:bg-[#1463F3] selection:text-white">
+    <div className="min-h-screen bg-ground text-ink flex flex-col antialiased selection:bg-accent selection:text-white">
       {/* Toast alert */}
       <Toast />
 
@@ -130,7 +133,7 @@ const MainLayout: React.FC = () => {
       <DrawerMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
       {/* Main View Area */}
-      <main className="flex-1 w-full">
+      <main id="main-content" className="flex-1 w-full">
         {renderCurrentView()}
       </main>
 

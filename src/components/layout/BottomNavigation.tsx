@@ -1,84 +1,98 @@
 import React from 'react';
-import { Home, MessageSquare, Compass, BookOpen, User } from 'lucide-react';
+import { Home, MessageSquare, Compass, BookOpen, Bookmark, User } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const BottomNavigation: React.FC = () => {
-  const { currentRoute, navigateTo, userCategory } = useApp();
+  const { currentRoute, navigateTo, userCategory, language } = useApp();
+
+  const isFr = language === 'fr';
+  const isEnrolled = userCategory === 'enrolled';
 
   const isExploreActive =
     currentRoute === '/programs' ||
     currentRoute.startsWith('/programs/') ||
+    currentRoute === '/program-comparison' ||
     currentRoute === '/resources' ||
     currentRoute.startsWith('/resources/') ||
     currentRoute === '/admissions' ||
+    currentRoute.startsWith('/admissions/') ||
     currentRoute === '/fees' ||
-    currentRoute === '/academic-calendar';
+    currentRoute === '/academic-calendar' ||
+    currentRoute === '/departments';
 
-  const isChatActive = currentRoute === '/chat' || currentRoute.startsWith('/chat/');
-  const isHomeActive = currentRoute === '/home';
-  const isProfileActive = currentRoute === '/profile' || currentRoute === '/settings';
-
-  const exploreLabel = userCategory === 'enrolled' ? 'Resources' : 'Explore';
-  const ExploreIcon = userCategory === 'enrolled' ? BookOpen : Compass;
-
-  const handleExploreClick = () => {
-    if (userCategory === 'enrolled') {
-      navigateTo('/resources');
-    } else {
-      navigateTo('/programs');
-    }
-  };
+  const items = [
+    {
+      id: 'home',
+      label: isFr ? 'Accueil' : 'Home',
+      icon: Home,
+      route: '/home',
+      active: currentRoute === '/home' || currentRoute === '/',
+    },
+    {
+      id: 'chat',
+      label: isFr ? 'Discussion' : 'Chat',
+      icon: MessageSquare,
+      route: '/chat',
+      active: currentRoute === '/chat' || currentRoute.startsWith('/chat/'),
+    },
+    {
+      id: 'explore',
+      label: isEnrolled
+        ? isFr
+          ? 'Ressources'
+          : 'Resources'
+        : isFr
+          ? 'Explorer'
+          : 'Explore',
+      icon: isEnrolled ? BookOpen : Compass,
+      route: isEnrolled ? '/resources' : '/programs',
+      active: isExploreActive,
+    },
+    {
+      id: 'saved',
+      label: isFr ? 'Enregistrés' : 'Saved',
+      icon: Bookmark,
+      route: '/saved',
+      active: currentRoute === '/saved',
+    },
+    {
+      id: 'profile',
+      label: isFr ? 'Profil' : 'Profile',
+      icon: User,
+      route: '/profile',
+      active: currentRoute === '/profile' || currentRoute === '/settings',
+    },
+  ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E1E8F2] h-15 sm:h-16 pb-safe shadow-xs">
-      <div className="max-w-lg mx-auto grid grid-cols-4 h-full items-center px-2">
-        {/* Home */}
-        <button
-          type="button"
-          onClick={() => navigateTo('/home')}
-          className={`flex flex-col items-center justify-center py-1 transition-colors min-h-[44px] cursor-pointer ${
-            isHomeActive ? 'text-[#1463F3]' : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Home className={`w-5 h-5 ${isHomeActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] font-semibold tracking-tight mt-0.5">Home</span>
-        </button>
-
-        {/* Chat */}
-        <button
-          type="button"
-          onClick={() => navigateTo('/chat')}
-          className={`flex flex-col items-center justify-center py-1 transition-colors min-h-[44px] cursor-pointer ${
-            isChatActive ? 'text-[#1463F3]' : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <MessageSquare className={`w-5 h-5 ${isChatActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] font-semibold tracking-tight mt-0.5">Chat</span>
-        </button>
-
-        {/* Explore / Resources */}
-        <button
-          type="button"
-          onClick={handleExploreClick}
-          className={`flex flex-col items-center justify-center py-1 transition-colors min-h-[44px] cursor-pointer ${
-            isExploreActive ? 'text-[#1463F3]' : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <ExploreIcon className={`w-5 h-5 ${isExploreActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] font-semibold tracking-tight mt-0.5">{exploreLabel}</span>
-        </button>
-
-        {/* Profile */}
-        <button
-          type="button"
-          onClick={() => navigateTo('/profile')}
-          className={`flex flex-col items-center justify-center py-1 transition-colors min-h-[44px] cursor-pointer ${
-            isProfileActive ? 'text-[#1463F3]' : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <User className={`w-5 h-5 ${isProfileActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span className="text-[10px] font-semibold tracking-tight mt-0.5">Profile</span>
-        </button>
+    <nav
+      aria-label="Primary mobile navigation"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-rule pb-safe md:hidden"
+    >
+      <div className="max-w-lg mx-auto grid grid-cols-5 h-16 px-1">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => navigateTo(item.route)}
+              className={`flex flex-col items-center justify-center gap-1 min-h-[44px] px-1 transition-colors ${
+                item.active ? 'text-accent' : 'text-muted hover:text-ink'
+              }`}
+              aria-current={item.active ? 'page' : undefined}
+            >
+              <Icon className={`w-5 h-5 ${item.active ? 'stroke-[2.3]' : 'stroke-[1.8]'}`} />
+              <span
+                className={`text-[12px] leading-none ${
+                  item.active ? 'font-semibold' : 'font-medium'
+                }`}
+              >
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

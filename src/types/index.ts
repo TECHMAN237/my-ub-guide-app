@@ -176,9 +176,9 @@ export interface SavedItem {
   savedAt: string;
 }
 
-// Voice & Gemma Model Types
-export interface GemmaModelConfig {
-  provider: 'google-genai' | 'vertex-ai' | 'custom-endpoint';
+// Voice & AI Model Types
+export interface AIModelConfig {
+  provider: 'openrouter' | 'google-genai' | 'vertex-ai' | 'custom-endpoint';
   modelId: string;
   displayName: string;
   temperature: number;
@@ -186,6 +186,9 @@ export interface GemmaModelConfig {
   requestTimeoutMs: number;
   retryCount: number;
 }
+
+/** @deprecated Use AIModelConfig. */
+export type ModelConfig = AIModelConfig;
 
 export type VoiceRecordingStatus = 'idle' | 'requesting_permission' | 'recording' | 'transcribing' | 'ready' | 'error';
 

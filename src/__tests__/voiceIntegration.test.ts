@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { voiceService } from '../services/voiceService';
-import { gemmaChatService } from '../services/gemmaChatService';
+import { openRouterChatService } from '../services/openRouterChatService';
 import { ttsService } from '../services/ttsService';
 import { UserProfile } from '../types';
 
@@ -36,8 +36,8 @@ describe('End-to-End Voice & Gemma Assistant Integration Flow', () => {
           ok: true,
           json: async () => ({
             text: 'For Computer Science, total annual fees are 290,000 FCFA broken into 3 instalments.',
-            modelId: 'gemma-4-26b-a4b-it',
-            provider: 'google-genai',
+            modelId: 'google/gemma-4-31b-it:free',
+            provider: 'openrouter',
             suggestedFollowUps: ['How can I pay in instalments?', 'What are the admission requirements?']
           })
         });
@@ -62,14 +62,14 @@ describe('End-to-End Voice & Gemma Assistant Integration Flow', () => {
       interestedDepartment: 'Computer Science'
     };
 
-    const gemmaResponse = await gemmaChatService.generateUniversityAnswer({
+    const gemmaResponse = await openRouterChatService.generateUniversityAnswer({
       message: transcript.text,
       userProfile: prospectiveProfile,
       language: 'en'
     });
 
     // 4. Verify Gemma response and sources
-    expect(gemmaResponse.modelId).toBe('gemma-4-26b-a4b-it');
+    expect(gemmaResponse.modelId).toBe('google/gemma-4-31b-it:free');
     expect(gemmaResponse.text).toContain('290,000 FCFA');
     expect(gemmaResponse.sources.length).toBeGreaterThan(0);
     expect(gemmaResponse.sources.some(s => s.title.includes('Fees'))).toBe(true);
@@ -115,8 +115,8 @@ describe('End-to-End Voice & Gemma Assistant Integration Flow', () => {
           ok: true,
           json: async () => ({
             text: 'Under University Academic Regulations, standard maximum load is 36 credits. You may register for up to 42 credits if your CGPA is 3.0 or higher and approved by the Dean.',
-            modelId: 'gemma-4-26b-a4b-it',
-            provider: 'google-genai'
+            modelId: 'google/gemma-4-31b-it:free',
+            provider: 'openrouter'
           })
         });
       }
@@ -138,7 +138,7 @@ describe('End-to-End Voice & Gemma Assistant Integration Flow', () => {
       language: 'en'
     };
 
-    const gemmaResponse = await gemmaChatService.generateUniversityAnswer({
+    const gemmaResponse = await openRouterChatService.generateUniversityAnswer({
       message: transcript.text,
       userProfile: enrolledProfile,
       language: 'en'
@@ -158,7 +158,7 @@ describe('End-to-End Voice & Gemma Assistant Integration Flow', () => {
     await expect(voiceService.transcribeAudio(fakeBlob, 'en')).rejects.toThrow();
 
     // User types text manually instead; Gemma still answers normally
-    const fallbackAnswer = await gemmaChatService.generateUniversityAnswer({
+    const fallbackAnswer = await openRouterChatService.generateUniversityAnswer({
       message: 'When does the semester end?',
       language: 'en',
       forceMockMode: true

@@ -1,49 +1,43 @@
+import 'dotenv/config';
 import { searchKnowledgeBase } from '../src/lib/ai/knowledgeBase.js';
-import { GoogleGenAI } from '@google/genai';
+import {
+  buildModelCandidates,
+  chatCompletionWithFallback,
+  getErrorMessage,
+  resolveOpenRouterModel
+} from '../src/lib/ai/openRouter.js';
 
+/**
+ * Manual smoke test for the OpenRouter chat pipeline.
+ * Run with: npx tsx scripts/verify-chat.ts
+ */
 async function runVerification() {
-  console.log('=== TESTING GEMINI FLASH MODELS ===\n');
-
-  const key = process.env.gemma_api_key || process.env.GEMMA_API_KEY || process.env.GEMINI_API_KEY;
-  if (!key) {
-    console.error('No API key found in environment');
-    return;
-  }
-
-  const client = new GoogleGenAI({
-    apiKey: key,
-    httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-  });
+  const model = resolveOpenRouterModel();
+  console.log(`=== TESTING OPENROUTER GEMMA (${model}) ===\n`);
+  console.log('Candidates:', buildModelCandidates().join(', '), '\n');
 
   const query = 'How much is the total annual fee for Computer Science at University of Buea?';
   const kbResult = searchKnowledgeBase(query);
 
-  const systemInstruction = `You are My UB Guide, official University of Buea AI Assistant.
+  const systemMessage = `You are UB Compass, the official University of Buea AI assistant.
 VERIFIED INSTITUTIONAL KNOWLEDGE EVIDENCE:
 ${kbResult.contextText}`;
 
-  const userPrompt = `User: ${query}\nAssistant:`;
+  try {
+    const result = await chatCompletionWithFallback({
+      model,
+      messages: [
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: query }
+      ]
+    });
 
-  const modelsToTest = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-pro', 'gemini-3.8-flash'];
-
-  for (const modelId of modelsToTest) {
-    console.log(`Testing model ${modelId}...`);
-    try {
-      const res = await client.models.generateContent({
-        model: modelId,
-        contents: userPrompt,
-        config: {
-          systemInstruction: systemInstruction,
-          temperature: 0.7,
-          maxOutputTokens: 300
-        }
-      });
-      console.log(`[SUCCESS ${modelId}]: "${(res.text || '').trim().substring(0, 150)}..."\n`);
-      break; // Stop at first succeeding model
-    } catch (err: any) {
-      console.error(`[FAIL ${modelId}]:`, err.message, '\n');
-    }
+    console.log(`Model used: ${result.model}`);
+    console.log(`Answer:\n${result.text}`);
+  } catch (error) {
+    console.error(`OpenRouter request failed: ${getErrorMessage(error)}`);
+    process.exitCode = 1;
   }
 }
 
-runVerification().catch(console.error);
+runVerification();
